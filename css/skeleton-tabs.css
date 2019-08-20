@@ -1,0 +1,37 @@
+
+ul.tab-nav {
+    list-style: none;
+    border-bottom: ;
+    padding-left: 3%;
+	padding-right: 0%;
+}
+
+ul.tab-nav li {
+    display: inline;
+}
+
+ul.tab-nav li a.button {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: -1px;
+    border-bottom: none;
+	border-top: 0.1em solid #888;
+	border-bottom: 0.1em solid #888;
+	border-left: 0.1em solid  #888;
+	border-right: 0.1em solid  #888;
+}
+
+ul.tab-nav li a.active.button {
+    border-bottom: 0.175em solid #f8f8f8;
+	border-top: 0.175em solid #aac741;
+	border-left: 0.175em solid #aac741;
+	border-right: 0.175em solid #aac741;
+}
+
+.tab-content .tab-pane {
+    display: none;
+}
+
+.tab-content .tab-pane.active {
+    display: block;
+}

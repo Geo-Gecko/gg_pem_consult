@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="description" content="Canvas Flowmap Layer with LeafletJS." />
+
+  <title>PEM map</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" />
+  <link rel="stylesheet" href="css/normalize.css" />
+  <link rel="stylesheet" href="css/skeleton.css" />
+  <link rel="stylesheet" href="css/skeleton-tabs.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.js"></script>
+  <script src="src/skeleton-tabs.js"></script>
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.css" /> -->
+  <link rel="stylesheet" href="css/nouislider.css" />
+  <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+  <!-- <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+  <!-- Color Scale -->
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #layout {
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      height: 60%;
+      position: relative;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+    }
+
+    .control-panel {
+      position: relative;
+      /* bottom: 5%; */
+      /* top: 5%; */
+      right: 0;
+      opacity: 0.85;
+      /* margin-right: 10px; */
+      /* margin-bottom: 10px; */
+      z-index: 1000;
+      /*max-width: 50%; */
+      width: 100%;
+      /* max-height: 515px; */
+      height: 40%;
+      /* overflow-y: auto; */
+      border-top: 3px solid #aac741;
+      border-bottom: 3px solid #aac741;
+      background-color: #f8f8f8;
+    }
+
+
+    .control-panel h4 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .control-panel p {
+      margin-bottom: .5rem;
+    }
+
+    .control-panel input[type=number] {
+      width: 48%;
+    }
+
+    .control-panel label {
+      font-weight: inherit;
+      margin-bottom: 1rem;
+    }
+
+    .control-panel select {
+      margin-bottom: 1rem;
+    }
+
+    /* This is changed!!! */
+    @media (max-width: 550px) {
+      .control-panel {
+        max-width: 100%;
+        width: 100%;
+        height: 200px;
+        overflow-y: auto;
+        position: absolute;
+        bottom: 0;
+        top: unset !important;
+        margin: 0 !important;
+
+      }
+
+      .tab-content {
+        overflow-y: unset !important
+      }
+
+    }
+
+    .control-panel h4 {
+      font-size: 2.4rem !important;
+    }
+
+
+    @media (max-width: 550px) {
+      .control-panel {
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+
+    .sliders {
+      margin: auto;
+      width: 75%;
+    }
+
+    .containerIMG {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    img {
+      flex: 1;
+      max-width: 100%;
+      height: auto;
+      max-height: 310px;
+    }
+
+    #student-count,
+    #pem-count {
+      padding-left: 10%;
+    }
+
+    .groupTitle {
+      font-size: larger;
+      text-decoration: underline;
+      color: black !important;
+      font-weight: bolder;
+    }
+
+    .selected {
+      background-color: #aac741;
+    }
+
+    .row {
+      white-space: nowrap;
+    }
+
+    .row>div {
+      width: 300px;
+      display: inline-block;
+    }
+
+    #projectsTable {
+      overflow-x: auto;
+      max-height: 200px !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="layout">
+    <div id="map"></div>
+    <div id="controlPanel" class="control-panel">
+      <br>
+      <ul class="tab-nav">
+        <li>
+          <a class="button active" href="#Filters" style="width: 32%;">Filters</a>
+        </li>
+        <li>
+          <a class="button" href="#Projects" style="width: 32%;">Projects <span id="pem-count"></span> </a>
+        </li>
+        <li>
+          <a class="button" id="statsButton" href="#Statistics" style="width: 32%;">SUMMARY</a>
+        </li>
+      </ul>
+
+
+      <div class="tab-content" style="overflow-y: auto; height:80%; margin: auto;" class="filterclass">
+
+
+        <!-- FILTER TAB-->
+        <div class="tab-pane active" id="Filters">
+          <center>
+            <!-- <div class="row"> -->
+            <div>
+              <button class="w3-bar-item w3-button" style="font-size: 10px; float: center !important;" id="countries">Countries</button>
+              <button class="w3-bar-item w3-button" style="font-size: 10px; float: center !important;" id="regions">Regions</button>
+            </div>
+            <div>
+              <strong>People</strong>
+              <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearPeople">Clear</button><br>
+              <button class="sector w3-bar-item w3-button selected" title="Governance & Civil Society" style="font-size: 10px; float: center !important;">GCS</button>
+              <button class="sector w3-bar-item w3-button selected" title="Skills & Employment" style="font-size: 10px; float: center !important;">SE</button>
+              <button class="sector w3-bar-item w3-button selected" title="Growth & Market Development" style="font-size: 10px; float: center !important;">GMD</button>
+              <button class="sector w3-bar-item w3-button selected" title="Agricultural & Rural Development" style="font-size: 10px; float: center !important;">ARD</button></div>
+            <div>
+              <strong>Environment</strong>
+              <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearEnvironment">Clear</button><br>
+              <button class="sector w3-bar-item w3-button selected" title="Water & Sanitation" style="font-size: 10px; float: center !important;">WS</button>
+              <button class="sector w3-bar-item w3-button selected" title="Environmental & Natural Resource Management" style="font-size: 10px; float: center !important;">ENM</button>
+              <button class="sector w3-bar-item w3-button selected" title="Renewable Energy" style="font-size: 10px; float: center !important;">RE</button>
+              <button class="sector w3-bar-item w3-button selected" title="Climate Change" style="font-size: 10px; float: center !important;">CC</button>
+            </div>
+            <div>
+              <strong>Management</strong>
+              <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearManagement">Clear</button><br>
+              <button class="sector w3-bar-item w3-button selected" title="Financial Management" style="font-size: 10px; float: center !important;">FM</button>
+              <button class="sector w3-bar-item w3-button selected" title="Public Sector Management & Reform" style="font-size: 10px; float: center !important;">PSM</button>
+              <button class="sector w3-bar-item w3-button selected" title="Sector Planning" style="font-size: 10px; float: center !important;">SP</button>
+              <button class="sector w3-bar-item w3-button selected" title="Aid Management & Result Based Management" style="font-size: 10px; float: center !important;">AM</button>
+            </div>
+            <div>
+              <button class="w3-bar-item w3-button" style="font-size: 10px; float: center !important;" id="resetSliders">Reset filters</button>
+            </div>
+            <!-- </div> -->
+            <br>
+
+            <!--List of filters:  -->
+            <div id='sliderContainer' style="float:unset; overflow-y: auto; max-height: 100%;">
+              <div>
+                <div class="col-md-12">
+                  <div id="pem-filter-list" class="custom-list"></div>
+                </div>
+              </div>
+            </div>
+
+          </center>
+        </div>
+
+
+        <!-- Projects tab -->
+        <div class="tab-pane" class="filterclass" id="Projects">
+          <!-- numbers -->
+          <center>
+            <strong>Filtered projects</strong>
+            <div id="projectsTable"></div>
+          </center>
+        </div>
+
+        <!-- Statistics tab -->
+        <div class="tab-pane" class="filterclass" id="Statistics">
+          <!-- numbers -->
+          <center>
+            <strong>Projects summary in clicked country/region</strong><br>
+            <h7>(Click on a country/region on the map)</h7>
+            <left>
+              <div id="sidebar-content"></div>
+              <br>
+              <br>
+              <div id="projectsSummaryTable" style="overflow-x: auto;"></div>
+
+            </left>
+          </center>
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+  </div>
+
+  <script>
+    function eventFire(el, etype) {
+      if (el.fireEvent) {
+        el.fireEvent('on' + etype);
+      } else {
+        var evObj = document.createEvent('Events');
+        evObj.initEvent(etype, true, false);
+        el.dispatchEvent(evObj);
+      }
+    }
+
+    //  function openPanel(PanelName) {
+    //    var i;
+    //    var x = document.getElementsByClassName("filterclass");
+    //    for (i = 0; i < x.length; i++) {
+    //      x[i].style.display = "none";
+    //    }
+    //    document.getElementById(PanelName).style.display = "block";
+    //  }
+
+    function updateTable(data, element) {
+
+      d3.select(element).select('table').remove();
+      var sortAscending = true;
+      var table = d3.select(element).append('table');
+      var titles = d3.keys(data[0]);
+      var titlesText = ["Start date (Month/Year)", "Compl. Date (Month/ Year)", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
+      var headers = table.append('thead').append('tr')
+        .selectAll('th')
+        .data(titlesText).enter()
+        .append('th')
+        .text(function(d) {
+          return d
+        })
+        .on('click', function(d) {
+          headers.attr('class', 'header');
+          if (sortAscending) {
+            rows.sort(function(a, b) {
+              return d3.descending(a.key, b.key)
+            });
+            sortAscending = false;
+            this.className = 'aes';
+          } else {
+            rows.sort(function(a, b) {
+              return d3.ascending(a.key, b.key)
+            });
+          }
+
+        });
+      var rows = table.append('tbody').selectAll('tr')
+        .data(data).enter()
+        .append('tr');
+      rows.selectAll('td')
+        .data(function(d) {
+          return titlesText.map(function(k) {
+            //  console.log(d + " | " + k)
+            if (k === 'values') {
+              return {
+                'value': +(d[k].length),
+                'name': k
+              };
+            } else {
+              return {
+                'value': d[k],
+                'name': k
+              };
+            }
+
+          });
+        }).enter()
+        .append('td')
+        .attr('data-th', function(d) {
+          return d.name;
+        })
+        .text(function(d) {
+          return d.value;
+        })
+    }
+  </script>
+
+
+  <!-- first load LeafletJS -->
+  <script src="https://unpkg.com/leaflet@1.3/dist/leaflet.js"></script>
+
+  <!-- load Esri Leaflet because we want to use an Esri basemap -->
+  <script src="https://unpkg.com/esri-leaflet@2.1/dist/esri-leaflet.js"></script>
+
+  <!-- load animation tweening lib requirement for CanvasFlowMapLayer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/17.2.0/Tween.min.js"></script>
+
+  <!-- then load CanvasFlowMapLayer -->
+  <script src="https://jwasilgeo.github.io/Leaflet.Canvas-Flowmap-Layer/src/CanvasFlowmapLayer.js"></script>
+
+  <!-- also load 3rd-party CSV parsing libary just for this demo  -->
+  <script src="https://unpkg.com/papaparse@4.3/papaparse.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+  <script>
+    var globalDataset, filteredDataset;
+    var featureElement;
+
+    $('.sector').on('click', function(e) {
+      $(this).toggleClass("selected unselected"); //you can list several class names 
+      var selected = d3.selectAll('.selected');
+
+      var activeButtons = [];
+
+      if (selected._groups[0].length > 0) {
+        $.each(selected._groups[0], function(index, value) {
+          activeButtons.push(value.textContent);
+        });
+
+      } else activeButtons = [];
+
+      filteredDataset = filteredDataset.filter(function(k) {
+        const found = [k.KW1, k.KW2].some(r => activeButtons.includes(r))
+        if (found) {
+          return k;
+        }
+      })
+
+      e.preventDefault();
+    });
+  </script>
+
+
+  <script>
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function SelectElement(id, valueToSelect) {
+      var element = document.getElementById(id);
+      element.value = valueToSelect;
+    }
+
+    var southWest = new L.LatLng(-1.606559295542773, 28.026294838895254),
+      northEast = new L.LatLng(4.301960929158914, 39.744435655056094),
+      bounds = new L.LatLngBounds(southWest, northEast);
+
+    var map;
+
+    // map.fitBounds(bounds);
+    Papa.parse('PEM_data/PEM Reference database June 2019.csv', {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+
+        Papa.parse('PEM_data/sliders.csv', {
+          download: true,
+          header: true,
+          dynamicTyping: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            forMax = results.data;
+            filters(results);
+          }
+        });
+
+        globalDataset = results.data;
+
+        filteredDataset = results.data;
+
+        //D3 function to summarize table by country
+        var countryList = d3.nest().key(function(d) {
+          return d.COUNTRY;
+        }).sortKeys(d3.ascending).entries(results.data);
+
+        d3.select("#pem-count").text(numberWithCommas(results.data.length));
+
+        var sortedData = results.data.sort(function(a, b) {
+          return d3.ascending(a.COUNTRY, b.COUNTRY)
+        })
+
+        updateTable(sortedData, '#projectsTable');
+
+        var domain = [+Infinity, -Infinity];
+
+        d3.json("./areas/Countries.geojson", main);
+        d3.json("./areas/Regions.geojson", mainRegion);
+
+        function main(data) {
+          addLmaps();
+          drawFeatures(data);
+        }
+
+        function mainRegion(data) {
+          //  drawFeatures(data);
+        }
+
+        function addLmaps() {
+
+          map = L.map('map');
+          if (L.Browser.mobile) {
+            map.setView([29.855533, 48.147778], 1.5);
+          } else {
+            map.setView([29.855533, 48.147778], 1.5);
+          }
+
+          L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          }) //.addTo(map);
+
+          L.svg().addTo(map);
+
+        }
+
+        function projectPoint(x, y) {
+          var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+          this.stream.point(point.x, point.y);
+        }
+
+        function drawFeatures(data) {
+          var svg = d3.select("#map").select("svg");
+
+          var transform = d3.geoTransform({
+            point: projectPoint
+          });
+          var path = d3.geoPath().projection(transform);
+
+          featureElement = svg.selectAll("path")
+            .data(data.features)
+            .enter()
+            .append("path")
+            .attr('fill-opacity', '0.5')
+            .attr("z-index", "600")
+            .attr("style", "pointer-events:all!important")
+            .style("cursor", "pointer")
+            .each(function(d) {
+              countryList.map(function(c) {
+                if (c.key === d.properties.NAME) {
+                  d.properties._projectCount = c.values.length;
+                  d.properties._projectValue = d3.sum(c.values, function(d) {
+                    return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
+                  })
+                  var filterValue = +(d.properties._projectCount);
+                  domain[0] = filterValue < domain[0] ? filterValue :
+                    domain[
+                      0];
+                  domain[1] = filterValue > domain[1] ? filterValue :
+                    domain[
+                      1];
+                }
+              });
+            })
+            .attr("stroke", "gray")
+            .attr("fill", function(d) {
+              return d.properties._projectCount > 37 ? '#aac741' :
+                d.properties._projectCount > 25 ? '#c7da80' :
+                d.properties._projectCount > 12 ? '#d5e3a0' :
+                d.properties._projectCount > 0 ? '#eaf1d0' :
+                '#7d7d7d';
+
+            })
+            .on("mouseover", function(d) {
+
+              d3.select('#statsButton').html(d.properties.NAME + " SUMMARY")
+            })
+            .on("mouseout", function(d) {
+              d3.select('#statsButton').html('SUMMARY')
+            })
+            .on("click", function(d) {
+              eventFire(document.getElementById('statsButton'), 'click');
+
+              $('#sidebar-content').html(
+                "<table>" +
+                "<tr><td>Country/Region</td><td style='padding-left: 10%;'>" + d.properties.NAME + "/" + d.properties.REGION_UN + "</td><tr>" +
+                "<tr><td>Total Value of Projects</td><td style='padding-left: 10%;'>" + d.properties._projectValue + "</td><tr>" +
+                "<tr><td>Number of Projects</td><td style='padding-left: 10%;'>" + d.properties._projectCount + "</td><tr>" + "</table>")
+
+              var tableData = countryList.filter(function(k) {
+                if (k.key === d.properties.NAME) {
+                  return k.values;
+                }
+              }).sort(function(x, y) {
+                return d3.ascending(x.COUNTRY, y.COUNTRY);
+              });
+
+              if (tableData[0]) {
+                updateTable(tableData[0].values, "#projectsSummaryTable")
+              } else {
+                updateTable([], "#projectsSummaryTable")
+              }
+
+            })
+
+          map.on("moveend", update);
+
+          update();
+
+          function update() {
+            featureElement.attr("d", path);
+          }
+
+        }
+
+      }
+
+    });
+  </script>
+  <script src="src/pem.js"></script>
+</body>
+
+</html>
