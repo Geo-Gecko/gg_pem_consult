@@ -319,7 +319,7 @@
       var sortAscending = true;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
-      var titlesText = ["Start date (Month/Year)", "Compl. Date (Month/ Year)", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
+      var titlesText = ["Start Year", "Compl. Date (Month/ Year)", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
       var headers = table.append('thead').append('tr')
         .selectAll('th')
         .data(titlesText).enter()
@@ -401,14 +401,14 @@
       key: "EUR Value of assignment",
       values: []
     }, {
-      key: "Start date (Month/Year)",
+      key: "Start Year",
       values: []
     }
     ];
 
     $('.sector').on('click', function (e) {
       $(this).toggleClass("selected unselected"); //you can list several class names 
-      styleFeatures();
+      styleFeatures(sliderData);
       e.preventDefault();
     });
   </script>
@@ -462,7 +462,7 @@
 
       _filteredDataset.filter(function (k) {
         $.each(sliderData, function (index, value) {
-          if (value.key !== "Start date (Month/Year)") {
+          if (value.key !== "Start Year") {
             if (parseFloat(k[value.key].toString().replace(/,/g, '')) > parseFloat(value.values[0]) && parseFloat(k[value.key].toString().replace(/,/g, '')) < parseFloat(value.values[1])) {
               _filtered1.push(k);
               return k;
@@ -473,7 +473,7 @@
 
       _filtered1.filter(function (k) {
         $.each(sliderData, function (index, value) {
-          if (value.key === "Start date (Month/Year)") {
+          if (value.key === "Start Year") {
             // console.log(k[value.key])
             if (parseFloat(Date.parse(k[value.key].toString())) > parseFloat(Date.parse(value.values[0].toString())) && parseFloat(Date.parse(k[value.key].toString())) < parseFloat(Date.parse(value.values[1].toString()))) {
               _filtered.push(k)
@@ -496,8 +496,8 @@
       })
       var step = max / 5;
 
-      console.log(step)
-      console.log(_countryList)
+      // console.log(step)
+      // console.log(_countryList)
 
       d3.select("#pem-count").text(numberWithCommas(_filtered.length));
 
@@ -517,9 +517,12 @@
               return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
             })
           } else {
-            // d.properties._projectCount = 0;
+            // d.properties._projectCount = -1;
+            // d.properties._projectValue = -1
           }
         });
+
+        console.log(d)
 
         return d.properties._projectCount > step + step + step + step ? '#aac741' :
           d.properties._projectCount > step + step + step ? '#c7da80' :
@@ -537,14 +540,15 @@
               return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
             })
           } else {
-            // d.properties._projectCount = 0;
+            // d.properties._projectCount = -1;
+            // d.properties._projectValue = -1
           }
         });
 
-        return d.properties._projectCount > step + step + step + step ? '#aac741' :
-          d.properties._projectCount > step + step + step ? '#c7da80' :
-            d.properties._projectCount > step + step ? '#d5e3a0' :
-              d.properties._projectCount > step ? '#eaf1d0' :
+        return d.properties._projectCount > 10 ? '#aac741' :
+          d.properties._projectCount > 9 ? '#c7da80' :
+            d.properties._projectCount > 8? '#d5e3a0' :
+              d.properties._projectCount > 5 ? '#eaf1d0' :
                 '#ddd';
 
       })
@@ -719,7 +723,7 @@
 
               var sortedData = filteredDataset.sort(function (a, b) {
                 //  console.log(Date.parse(a["Start date (Month/Year)"].toString()))
-                return d3.ascending(Date.parse(a["Start date (Month/Year)"].toString()), Date.parse(b["Start date (Month/Year)"].toString()))
+                return d3.ascending(Date.parse(a["Start Year"].toString()), Date.parse(b["Start Year"].toString()))
               })
 
               console.log(sortedData);

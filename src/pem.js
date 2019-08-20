@@ -25,11 +25,11 @@ function filters(filterList) {
   });
 
   var Start = d3.min(filteredDataset, function(d) {
-    return Date.parse(d["Start date (Month/Year)"].toString())
+    return Date.parse(d["Start Year"].toString())
   });
 
   var End = d3.max(filteredDataset, function(d) {
-    return Date.parse(d["Compl. Date (Month/ Year)"].toString())
+    return Date.parse(d["Start Year"].toString())
   });
 
   // function timestamp(str) {
