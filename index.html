@@ -268,8 +268,8 @@
               <div>
                 <div class="col-md-12" style="overflow-x: hidden">
                   <center>
-                  <div id="pem-filter-list" class="row custom-list" style="padding-left: 10%"></div>
-                </center>
+                    <div id="pem-filter-list" class="row custom-list" style="padding-left: 10%"></div>
+                  </center>
                 </div>
               </div>
             </div>
@@ -319,7 +319,7 @@
       var sortAscending = true;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
-      var titlesText = ["Start Year", "Compl. Date (Month/ Year)", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
+      var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
       var headers = table.append('thead').append('tr')
         .selectAll('th')
         .data(titlesText).enter()
@@ -434,6 +434,7 @@
         }
       })
 
+
       var _filtered1 = [];
       var _filtered = [];
 
@@ -463,7 +464,7 @@
       _filteredDataset.filter(function (k) {
         $.each(sliderData, function (index, value) {
           if (value.key !== "Start Year") {
-            if (parseFloat(k[value.key].toString().replace(/,/g, '')) > parseFloat(value.values[0]) && parseFloat(k[value.key].toString().replace(/,/g, '')) < parseFloat(value.values[1])) {
+            if (parseFloat(k[value.key].toString().replace(/,/g, '')) >= parseFloat(value.values[0]) && parseFloat(k[value.key].toString().replace(/,/g, '')) <= parseFloat(value.values[1])) {
               _filtered1.push(k);
               return k;
             }
@@ -475,7 +476,7 @@
         $.each(sliderData, function (index, value) {
           if (value.key === "Start Year") {
             // console.log(k[value.key])
-            if (parseFloat(Date.parse(k[value.key].toString())) > parseFloat(Date.parse(value.values[0].toString())) && parseFloat(Date.parse(k[value.key].toString())) < parseFloat(Date.parse(value.values[1].toString()))) {
+            if (parseFloat(Date.parse(k[value.key].toString())) >= parseFloat(Date.parse(value.values[0].toString())) && parseFloat(Date.parse(k[value.key].toString())) <= parseFloat(Date.parse(value.values[1].toString()))) {
               _filtered.push(k)
               return k;
             }
@@ -491,10 +492,15 @@
         return d.REGION;
       }).sortKeys(d3.ascending).entries(_filtered);
 
-      var max = d3.max(_countryList, function (d) {
+      var maxCountry = d3.max(_countryList, function (d) {
         return d.values.length;
       })
-      var step = max / 5;
+
+      var maxRegion = d3.max(_regionList, function (d) {
+        return d.values.length;
+      })
+
+      // console.log(steps)
 
       // console.log(step)
       // console.log(_countryList)
@@ -510,24 +516,24 @@
       updateTable(_sortedData, '#projectsTable');
 
       featureElement.style("fill", function (d) {
+        d.properties._projectCount = -1;
+        d.properties._projectValue = -1
         _countryList.map(function (c) {
           if (c.key === d.properties.NAME) {
             d.properties._projectCount = c.values.length;
             d.properties._projectValue = d3.sum(c.values, function (d) {
               return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
             })
-          } else {
-            // d.properties._projectCount = -1;
-            // d.properties._projectValue = -1
           }
         });
 
-        console.log(d)
+        console.log(maxCountry)
+        console.log(maxRegion)
 
-        return d.properties._projectCount > step + step + step + step ? '#aac741' :
-          d.properties._projectCount > step + step + step ? '#c7da80' :
-            d.properties._projectCount > step + step ? '#d5e3a0' :
-              d.properties._projectCount > step ? '#eaf1d0' :
+        return d.properties._projectCount > (Math.ceil(maxCountry/4)*3) ? '#aac741' :
+          d.properties._projectCount > (Math.ceil(maxCountry/4)*2) ? '#c7da80' :
+            d.properties._projectCount > (Math.ceil(maxCountry/4)) ? '#d5e3a0' :
+              d.properties._projectCount > 0 ? '#eaf1d0' :
                 '#ddd';
 
       })
@@ -545,10 +551,10 @@
           }
         });
 
-        return d.properties._projectCount > 10 ? '#aac741' :
-          d.properties._projectCount > 9 ? '#c7da80' :
-            d.properties._projectCount > 8? '#d5e3a0' :
-              d.properties._projectCount > 5 ? '#eaf1d0' :
+        return d.properties._projectCount > (Math.ceil(maxRegion/4)*3) ? '#aac741' :
+          d.properties._projectCount > (Math.ceil(maxRegion/4)*2) ? '#c7da80' :
+            d.properties._projectCount > (Math.ceil(maxRegion/4)) ? '#d5e3a0' :
+              d.properties._projectCount > 0 ? '#eaf1d0' :
                 '#ddd';
 
       })
@@ -604,7 +610,7 @@
 
         var domain = [+Infinity, -Infinity];
 
-        d3.json("./areas/Countries.geojson", main);
+        d3.json("./areas/Countries - Copy.geojson", main);
         d3.json("./areas/Regions.geojson", mainRegion);
 
         function main(data) {
