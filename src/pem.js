@@ -74,7 +74,7 @@ function filters(filterList) {
 
   sliderData[1].values = [toFormat(parseFloat(Start)), toFormat(parseFloat(End))];
 
-  sliders[0].noUiSlider.on('end', function(values, handle) {
+  sliders[0].noUiSlider.on('slide', function(values, handle) {
     sliderData[1].values = values;
     styleFeatures(sliderData);
   });
@@ -101,7 +101,7 @@ function filters(filterList) {
 
   sliderData[0].values = [min, max];
 
-  sliders[1].noUiSlider.on('end', function(values, handle) {
+  sliders[1].noUiSlider.on('slide', function(values, handle) {
     sliderData[0].values = values;
     styleFeatures(sliderData);
   });

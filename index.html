@@ -273,8 +273,7 @@
                 </div>
               </div>
             </div>
-
-          </center>
+            </center>
         </div>
 
 
@@ -396,6 +395,9 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
+  
+  <script src="src/piechartAndLegend.js"></script>
+
   <script>
     var globalDataset, filteredDataset, sliderData = [{
       key: "EUR Value of assignment",
@@ -438,28 +440,6 @@
       var _filtered1 = [];
       var _filtered = [];
 
-      // console.log(sliderData[0].values)
-
-      // _filteredDataset.filter(function (k) {
-      //   $.each(sliderData, function (index, value) {
-      //     if (value.key !== "Start date (Month/Year)") {
-      //       if (parseFloat(k[value.key].toString().replace(/,/g, '')) > parseFloat(value.values[0])) {//} && parseFloat(k[value.key].toString().replace(/,/g, '')) > parseFloat(value.values[1])) {
-      //         // console.log([parseFloat(value.values[1]), parseFloat(k[value.key].toString().replace(/,/g, '')) , parseFloat(value.values[0])]);
-      //         // console.log(value.values[0])
-      //         // console.log(k)
-      //         _filtered1.push(k);
-      //         return k;
-      //       }
-      //     }
-      //     // else if (value.key === "Start date (Month/Year)") {
-      //     //   if (parseFloat(Date.parse(k[value.key].toString())) > parseFloat(Date.parse(value.values[0].toString())) && parseFloat(Date.parse(k[value.key].toString())) < parseFloat(Date.parse(value.values[1].toString()))) {
-      //     //     return k;
-      //     //   }
-      //     // } 
-      //     // console.log(valid)
-
-      //   })
-      // })
 
       _filteredDataset.filter(function (k) {
         $.each(sliderData, function (index, value) {
@@ -500,11 +480,6 @@
         return d.values.length;
       })
 
-      // console.log(steps)
-
-      // console.log(step)
-      // console.log(_countryList)
-
       d3.select("#pem-count").text(numberWithCommas(_filtered.length));
 
 
@@ -527,9 +502,6 @@
           }
         });
 
-        console.log(maxCountry)
-        console.log(maxRegion)
-
         return d.properties._projectCount > (Math.ceil(maxCountry/4)*3) ? '#aac741' :
           d.properties._projectCount > (Math.ceil(maxCountry/4)*2) ? '#c7da80' :
             d.properties._projectCount > (Math.ceil(maxCountry/4)) ? '#d5e3a0' :
@@ -538,16 +510,20 @@
 
       })
 
+      var array = ['#eaf1d0', '#d5e3a0', '#c7da80', '#aac741'];
+             var arrayLabel = ["0 - "+(Math.ceil(maxCountry/4)) , (Math.ceil(maxCountry/4)) +" - " +(Math.ceil(maxCountry/4)*2),  (Math.ceil(maxCountry/4)*2) +" - " +(Math.ceil(maxCountry/4)*3),  (Math.ceil(maxCountry/4)*3) +" - " +(Math.ceil(maxCountry/4)*4)];
+
+             addLegend(array, arrayLabel, "Legend", "#legend", "circle");
+
       featureElementRegions.style("fill", function (d) {
+        d.properties._projectCount = -1;
+        d.properties._projectValue = -1
         _regionList.map(function (c) {
           if (c.key === d.properties.REGION_UN) {
             d.properties._projectCount = c.values.length;
             d.properties._projectValue = d3.sum(c.values, function (d) {
               return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
             })
-          } else {
-            // d.properties._projectCount = -1;
-            // d.properties._projectValue = -1
           }
         });
 
@@ -558,6 +534,11 @@
                 '#ddd';
 
       })
+
+      var array = ['#eaf1d0', '#d5e3a0', '#c7da80', '#aac741'];
+             var arrayLabel = ["0 - "+(Math.ceil(maxRegion/4)) , (Math.ceil(maxRegion/4)) +" - " +(Math.ceil(maxRegion/4)*2),  (Math.ceil(maxRegion/4)*2) +" - " +(Math.ceil(maxRegion/4)*3),  (Math.ceil(maxRegion/4)*3) +" - " +(Math.ceil(maxRegion/4)*4)];
+
+             addLegend(array, arrayLabel, "Legend",  "#legendRegion", "circle");
     }
 
     function numberWithCommas(x) {
@@ -642,6 +623,17 @@
 
           L.svg().addTo(map);
 
+          var Legend = L.control({position: 'bottomright'});
+
+				Legend.onAdd = function (map) {
+					var div = L.DomUtil.create('div', 'info legend');
+					div.innerHTML +=
+						'<div id="legend"></div>';
+					return div;
+        };
+        
+        Legend.addTo(map);
+
         }
 
         function addLmapsRegions() {
@@ -662,6 +654,17 @@
           mapRegions.fitBounds(bounds);
 
           L.svg().addTo(mapRegions);
+
+          var legendRegion = L.control({position: 'bottomright'});
+
+          legendRegion.onAdd = function (mapRegions) {
+					var div = L.DomUtil.create('div', 'info legend');
+					div.innerHTML +=
+						'<div id="legendRegion"></div>';
+					return div;
+        };
+        
+        legendRegion.addTo(mapRegions);
 
         }
 
@@ -721,18 +724,10 @@
             .on("click", function (d) {
               eventFire(document.getElementById('projectsButton'), 'click');
 
-              $('#sidebar-content').html(
-                "<table>" +
-                "<tr><td>Country/Region</td><td style='padding-left: 10%;'>" + d.properties.NAME + "/" + d.properties.REGION_UN + "</td><tr>" +
-                "<tr><td>Total Value of Projects</td><td style='padding-left: 10%;'>" + numberWithCommas(d.properties._projectValue) + "€ </td><tr>" +
-                "<tr><td>Number of Projects</td><td style='padding-left: 10%;'>" + numberWithCommas(d.properties._projectCount) + "</td><tr>" + "</table>")
-
               var sortedData = filteredDataset.sort(function (a, b) {
                 //  console.log(Date.parse(a["Start date (Month/Year)"].toString()))
                 return d3.ascending(Date.parse(a["Start Year"].toString()), Date.parse(b["Start Year"].toString()))
               })
-
-              console.log(sortedData);
 
               //  let sortedArr = sortedData.reduce((acc, element) => {
               //    if (element.COUNTRY = d.properties.NAME) {
@@ -807,12 +802,6 @@
               //  console.log(filteredDataset);
               eventFire(document.getElementById('projectsButton'), 'click');
 
-              $('#sidebar-content').html(
-                "<table>" +
-                "<tr><td>Country/Region</td><td style='padding-left: 10%;'>" + d.properties.NAME + "/" + d.properties.REGION_UN + "</td><tr>" +
-                "<tr><td>Total Value of Projects</td><td style='padding-left: 10%;'>" + numberWithCommas(d.properties._projectValue) + "€ </td><tr>" +
-                "<tr><td>Number of Projects</td><td style='padding-left: 10%;'>" + numberWithCommas(d.properties._projectCount) + "</td><tr>" + "</table>")
-
               var tableData = regionList.filter(function (k) {
                 if (k.key === d.properties.REGION_UN) {
                   return k.values;
@@ -847,6 +836,8 @@
       }
 
     });
+
+    
   </script>
 
   <script>
