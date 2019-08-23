@@ -23,6 +23,10 @@
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
   <style>
+    .leaflet-container {
+      background: #fff;
+    }
+
     body {
       overflow-y: hidden;
       margin: 0;
@@ -174,14 +178,37 @@
       display: inline-block;
     }
 
-    #projectsTable {
-      width: 80%;
-
-    }
 
     .highlighted {
       /* background-color: #aac741; */
     }
+
+    #legend,
+    #legendRegion {
+      border-radius: 5px;
+      background-color: lightgrey;
+    }
+
+    #summary {
+      padding-left: 5%;
+    }
+
+
+    .container {
+      display: flex;
+      flex: auto;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .head {}
+
+    .content {
+      border: 1px solid #bbb;
+      overflow-y: auto;
+    }
+
+    .foot {}
   </style>
 
 </head>
@@ -199,7 +226,7 @@
         </li>
         <li>
           <a class="button" href="#Projects" id="projectsButton" style="width: 48%;">Projects <span
-              id="pem-count"></span> </a>
+              id="pem-count"></span> <span id="summary"></span></a>
         </li>
       </ul>
 
@@ -222,44 +249,43 @@
                 <strong>People</strong>
                 <!-- <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearPeople">Clear</button> -->
                 <br>
-                <button class="sector w3-bar-item w3-button selected" title="Governance & Civil Society"
+                <button class="sector w3-bar-item w3-button" title="Governance & Civil Society"
                   style="font-size: 10px; float: center !important;">GCS</button>
-                <button class="sector w3-bar-item w3-button selected" title="Skills & Employment"
+                <button class="sector w3-bar-item w3-button" title="Skills & Employment"
                   style="font-size: 10px; float: center !important;">SE</button>
-                <button class="sector w3-bar-item w3-button selected" title="Growth & Market Development"
+                <button class="sector w3-bar-item w3-button" title="Growth & Market Development"
                   style="font-size: 10px; float: center !important;">GMD</button>
-                <button class="sector w3-bar-item w3-button selected" title="Agricultural & Rural Development"
+                <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development"
                   style="font-size: 10px; float: center !important;">ARD</button></div>
               <div>
                 <strong>Environment</strong>
                 <!-- <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearEnvironment">Clear</button> -->
                 <br>
-                <button class="sector w3-bar-item w3-button selected" title="Water & Sanitation"
+                <button class="sector w3-bar-item w3-button" title="Water & Sanitation"
                   style="font-size: 10px; float: center !important;">WS</button>
-                <button class="sector w3-bar-item w3-button selected"
-                  title="Environmental & Natural Resource Management"
+                <button class="sector w3-bar-item w3-button" title="Environmental & Natural Resource Management"
                   style="font-size: 10px; float: center !important;">ENM</button>
-                <button class="sector w3-bar-item w3-button selected" title="Renewable Energy"
+                <button class="sector w3-bar-item w3-button" title="Renewable Energy"
                   style="font-size: 10px; float: center !important;">RE</button>
-                <button class="sector w3-bar-item w3-button selected" title="Climate Change"
+                <button class="sector w3-bar-item w3-button" title="Climate Change"
                   style="font-size: 10px; float: center !important;">CC</button>
               </div>
               <div>
                 <strong>Management</strong>
                 <!-- <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearManagement">Clear</button> -->
                 <br>
-                <button class="sector w3-bar-item w3-button selected" title="Financial Management"
+                <button class="sector w3-bar-item w3-button" title="Financial Management"
                   style="font-size: 10px; float: center !important;">FM</button>
-                <button class="sector w3-bar-item w3-button selected" title="Public Sector Management & Reform"
+                <button class="sector w3-bar-item w3-button" title="Public Sector Management & Reform"
                   style="font-size: 10px; float: center !important;">PSM</button>
-                <button class="sector w3-bar-item w3-button selected" title="Sector Planning"
+                <button class="sector w3-bar-item w3-button" title="Sector Planning"
                   style="font-size: 10px; float: center !important;">SP</button>
-                <button class="sector w3-bar-item w3-button selected" title="Aid Management & Result Based Management"
+                <button class="sector w3-bar-item w3-button" title="Aid Management & Result Based Management"
                   style="font-size: 10px; float: center !important;">AM</button>
               </div>
               <div>
                 <button class="w3-bar-item w3-button" style="font-size: 10px; float: center !important;"
-                  id="resetSliders">Reset filters</button>
+                  id="resetSliders">Reset Sliders</button>
               </div>
             </div>
 
@@ -273,22 +299,43 @@
                 </div>
               </div>
             </div>
-            </center>
+          </center>
         </div>
 
 
         <!-- Projects tab -->
-        <div class="tab-pane" class="filterclass" id="Projects" style="overflow-y: auto;">
+        <div class="tab-pane" class="filterclass" id="Projects"
+          style="overflow-x: hidden;height: 100%;width: 90% !important;">
           <!-- numbers -->
-          <center>
-            <strong>Filtered projects</strong>
-            <div id="projectsTable"></div>
-          </center>
+          <div class="container">
+            <div class="head">
+              <strong>Filtered projects</strong>
+              <div id='headers'></div>
+              <!-- <table> -->
+                <!-- <tbody>
+                  <tr style="width: 100% !important;" >
+                    <td class="header" style="width: 25%;">Start Year</th>
+                    <td class="header" style="width: 25%;">Duration</th>
+                    <td class="header" style="width: 25%;">PROJECT TITLE</th>
+                    <td class="header" style="width: 25%;">COUNTRY</th>
+                    <td class="header" style="width: 25%;">Name of Client</th>
+                    <td class="header" style="width: 25%;">EUR Value of assignment</th>
+                  </tr>
+                </tbody> -->
+              <!-- </table> -->
+            </div>
+            <div class="content">
+                <div id="projectsTable"></div>
+              </div>
+              <div class="foot"></div>
+          </div>
+          
         </div>
-
       </div>
 
     </div>
+
+  </div>
   </div>
 
 
@@ -320,13 +367,16 @@
       var titles = d3.keys(data[0]);
       var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
       var headers = table.append('thead').append('tr')
+      .attr('id', 'headersT')
         .selectAll('th')
         .data(titlesText).enter()
         .append('th')
+        .style('width', '25%')
         .text(function (d) {
           return d
         })
         .on('click', function (d) {
+          console.log(d)
           headers.attr('class', 'header');
           if (sortAscending) {
             rows.sort(function (a, b) {
@@ -341,6 +391,9 @@
           }
 
         });
+        // $('#headers').prepend($('#headersT'));
+
+        // console.log(headers)
       var rows = table.append('tbody').selectAll('tr')
         .data(data).enter()
         .append('tr');
@@ -363,17 +416,21 @@
           });
         }).enter()
         .append('td')
+        .style('width', '25%')
         .attr('data-th', function (d) {
           return d.name;
         })
-        .attr('class', function (d) {
-          if (d.value === different) {
-            return 'highlighted'
-          }
-          return
-        })
+        // .attr('class', function (d) {
+        //   if (d.value === different) {
+        //     return 'highlighted'
+        //   }
+        //   return
+        // })
         .text(function (d) {
-          return d.value;
+          // console.log(typeof(d.value))
+          if (typeof (d.value) === 'string') {
+            return d.value.replace(/[^\x00-\x7F]/g, "");
+          } else return d.value;
         })
 
       $('.highlighted').parent().animate({ backgroundColor: '#aac741' }, 1000).animate({ borderColor: '#C97200' }, 1000);
@@ -395,11 +452,11 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-  
+
   <script src="src/piechartAndLegend.js"></script>
 
   <script>
-    var globalDataset, filteredDataset, sliderData = [{
+    var globalDataset, filteredCountryList, filteredRegionList, sliderData = [{
       key: "EUR Value of assignment",
       values: []
     }, {
@@ -418,23 +475,31 @@
 
   <script>
     function styleFeatures(sliderData) {
+
+      $('#summary').hide();
       var selected = d3.selectAll('.selected');
 
       var activeButtons = [];
+      var _filteredDataset = []
 
       if (selected._groups[0].length > 0) {
         $.each(selected._groups[0], function (index, value) {
           activeButtons.push(value.textContent);
         });
 
-      } else activeButtons = [];
+        _filteredDataset = globalDataset.filter(function (k) {
+          const found = [k.KW1, k.KW2].some(r => activeButtons.includes(r))
+          if (found) {
+            return k;
+          }
+        })
 
-      var _filteredDataset = globalDataset.filter(function (k) {
-        const found = [k.KW1, k.KW2].some(r => activeButtons.includes(r))
-        if (found) {
-          return k;
-        }
-      })
+      } else {
+
+        activeButtons = [];
+        _filteredDataset = globalDataset
+
+      }
 
 
       var _filtered1 = [];
@@ -468,9 +533,13 @@
         return d.COUNTRY;
       }).sortKeys(d3.ascending).entries(_filtered);
 
+      filteredCountryList = _countryList;
+
       var _regionList = d3.nest().key(function (d) {
         return d.REGION;
       }).sortKeys(d3.ascending).entries(_filtered);
+
+      filteredRegionList = _regionList;
 
       var maxCountry = d3.max(_countryList, function (d) {
         return d.values.length;
@@ -502,18 +571,18 @@
           }
         });
 
-        return d.properties._projectCount > (Math.ceil(maxCountry/4)*3) ? '#aac741' :
-          d.properties._projectCount > (Math.ceil(maxCountry/4)*2) ? '#c7da80' :
-            d.properties._projectCount > (Math.ceil(maxCountry/4)) ? '#d5e3a0' :
-              d.properties._projectCount > 0 ? '#eaf1d0' :
-                '#ddd';
+        return d.properties._projectCount > (Math.ceil(maxCountry / 4) * 3) ? '#006d2c' :
+          d.properties._projectCount > (Math.ceil(maxCountry / 4) * 2) ? '#41ab5d' :
+            d.properties._projectCount > (Math.ceil(maxCountry / 4)) ? '#74c476' :
+              d.properties._projectCount > 0 ? '#a1d99b' :
+                '#fff';
 
       })
 
-      var array = ['#eaf1d0', '#d5e3a0', '#c7da80', '#aac741'];
-             var arrayLabel = ["0 - "+(Math.ceil(maxCountry/4)) , (Math.ceil(maxCountry/4)) +" - " +(Math.ceil(maxCountry/4)*2),  (Math.ceil(maxCountry/4)*2) +" - " +(Math.ceil(maxCountry/4)*3),  (Math.ceil(maxCountry/4)*3) +" - " +(Math.ceil(maxCountry/4)*4)];
+      var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+      var arrayLabel = ["No Projects", "0 - " + (Math.ceil(maxCountry / 4)), (Math.ceil(maxCountry / 4)) + " - " + (Math.ceil(maxCountry / 4) * 2), (Math.ceil(maxCountry / 4) * 2) + " - " + (Math.ceil(maxCountry / 4) * 3), (Math.ceil(maxCountry / 4) * 3) + " - " + (Math.ceil(maxCountry / 4) * 4)];
 
-             addLegend(array, arrayLabel, "Legend", "#legend", "circle");
+      addLegend(array, arrayLabel, "Legend", "#legend", "circle");
 
       featureElementRegions.style("fill", function (d) {
         d.properties._projectCount = -1;
@@ -527,18 +596,19 @@
           }
         });
 
-        return d.properties._projectCount > (Math.ceil(maxRegion/4)*3) ? '#aac741' :
-          d.properties._projectCount > (Math.ceil(maxRegion/4)*2) ? '#c7da80' :
-            d.properties._projectCount > (Math.ceil(maxRegion/4)) ? '#d5e3a0' :
-              d.properties._projectCount > 0 ? '#eaf1d0' :
-                '#ddd';
+
+        return d.properties._projectCount > (Math.ceil(maxRegion / 4) * 3) ? '#006d2c' :
+          d.properties._projectCount > (Math.ceil(maxRegion / 4) * 2) ? '#41ab5d' :
+            d.properties._projectCount > (Math.ceil(maxRegion / 4)) ? '#74c476' :
+              d.properties._projectCount > 0 ? '#a1d99b' :
+                '#fff';
 
       })
 
-      var array = ['#eaf1d0', '#d5e3a0', '#c7da80', '#aac741'];
-             var arrayLabel = ["0 - "+(Math.ceil(maxRegion/4)) , (Math.ceil(maxRegion/4)) +" - " +(Math.ceil(maxRegion/4)*2),  (Math.ceil(maxRegion/4)*2) +" - " +(Math.ceil(maxRegion/4)*3),  (Math.ceil(maxRegion/4)*3) +" - " +(Math.ceil(maxRegion/4)*4)];
+      var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+      var arrayLabel = ["No Projects", "0 - " + (Math.ceil(maxRegion / 4)), (Math.ceil(maxRegion / 4)) + " - " + (Math.ceil(maxRegion / 4) * 2), (Math.ceil(maxRegion / 4) * 2) + " - " + (Math.ceil(maxRegion / 4) * 3), (Math.ceil(maxRegion / 4) * 3) + " - " + (Math.ceil(maxRegion / 4) * 4)];
 
-             addLegend(array, arrayLabel, "Legend",  "#legendRegion", "circle");
+      addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
     }
 
     function numberWithCommas(x) {
@@ -576,12 +646,24 @@
           return d.COUNTRY;
         }).sortKeys(d3.ascending).entries(results.data);
 
+        filteredCountryList = countryList
+
         //D3 function to summarize table by region
         var regionList = d3.nest().key(function (d) {
           return d.REGION
         }).sortKeys(d3.ascending).entries(results.data);
 
+        filteredRegionList = regionList;
+
         d3.select("#pem-count").text(numberWithCommas(results.data.length));
+
+        var _maxCountry = d3.max(countryList, function (d) {
+          return d.values.length;
+        })
+
+        var _maxRegion = d3.max(regionList, function (d) {
+          return d.values.length;
+        })
 
         var sortedData = results.data.sort(function (a, b) {
           return d3.ascending(a.COUNTRY, b.COUNTRY)
@@ -591,7 +673,7 @@
 
         var domain = [+Infinity, -Infinity];
 
-        d3.json("./areas/Countries - Copy.geojson", main);
+        d3.json("./areas/Countries.geojson", main);
         d3.json("./areas/Regions.geojson", mainRegion);
 
         function main(data) {
@@ -623,16 +705,16 @@
 
           L.svg().addTo(map);
 
-          var Legend = L.control({position: 'bottomright'});
+          var Legend = L.control({ position: 'bottomright' });
 
-				Legend.onAdd = function (map) {
-					var div = L.DomUtil.create('div', 'info legend');
-					div.innerHTML +=
-						'<div id="legend"></div>';
-					return div;
-        };
-        
-        Legend.addTo(map);
+          Legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML +=
+              '<div id="legend"></div>';
+            return div;
+          };
+
+          Legend.addTo(map);
 
         }
 
@@ -655,16 +737,16 @@
 
           L.svg().addTo(mapRegions);
 
-          var legendRegion = L.control({position: 'bottomright'});
+          var legendRegion = L.control({ position: 'bottomright' });
 
           legendRegion.onAdd = function (mapRegions) {
-					var div = L.DomUtil.create('div', 'info legend');
-					div.innerHTML +=
-						'<div id="legendRegion"></div>';
-					return div;
-        };
-        
-        legendRegion.addTo(mapRegions);
+            var div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML +=
+              '<div id="legendRegion"></div>';
+            return div;
+          };
+
+          legendRegion.addTo(mapRegions);
 
         }
 
@@ -714,15 +796,27 @@
             .attr("stroke-width", "0.5px")
             .attr("stroke", "#848383")
             .attr("fill", function (d) {
-              return d.properties._projectCount > 37 ? '#aac741' :
-                d.properties._projectCount > 25 ? '#c7da80' :
-                  d.properties._projectCount > 12 ? '#d5e3a0' :
-                    d.properties._projectCount > 0 ? '#eaf1d0' :
-                      '#ddd';
+              return d.properties._projectCount > (Math.ceil(_maxCountry / 4) * 3) ? '#006d2c' :
+                d.properties._projectCount > (Math.ceil(_maxCountry / 4) * 2) ? '#41ab5d' :
+                  d.properties._projectCount > (Math.ceil(_maxCountry / 4)) ? '#74c476' :
+                    d.properties._projectCount > 0 ? '#a1d99b' :
+                      '#fff';
 
             })
             .on("click", function (d) {
               eventFire(document.getElementById('projectsButton'), 'click');
+
+              $('#summary').show();
+              $('#summary').html('<span>' + d.properties.NAME + ' (None)</span>');
+
+              $.each(filteredCountryList, function (index, value) {
+                if (d.properties.NAME === value.key) {
+                  console.log(value.values.length)
+                  $('#summary').html('<span>' + d.properties.NAME + ' (' + value.values.length + ' projects)</span>');
+                }
+              })
+
+              // $('#summary').html('<span>' + d.properties.Name + '</span>');
 
               var sortedData = filteredDataset.sort(function (a, b) {
                 //  console.log(Date.parse(a["Start date (Month/Year)"].toString()))
@@ -744,6 +838,11 @@
               }
 
             })
+
+          var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+          var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxCountry / 4)), (Math.ceil(_maxCountry / 4)) + " - " + (Math.ceil(_maxCountry / 4) * 2), (Math.ceil(_maxCountry / 4) * 2) + " - " + (Math.ceil(_maxCountry / 4) * 3), (Math.ceil(_maxCountry / 4) * 3) + " - " + (Math.ceil(_maxCountry / 4) * 4)];
+
+          addLegend(array, arrayLabel, "Legend", "#legend", "circle");
 
           map.on("moveend", update);
 
@@ -791,11 +890,12 @@
             .attr("stroke-width", "0.5px")
             .attr("stroke", "#848383")
             .attr("fill", function (d) {
-              return d.properties._projectCount > 37 ? '#aac741' :
-                d.properties._projectCount > 25 ? '#c7da80' :
-                  d.properties._projectCount > 12 ? '#d5e3a0' :
-                    d.properties._projectCount > 0 ? '#eaf1d0' :
-                      '#ddd';
+
+              return d.properties._projectCount > (Math.ceil(_maxRegion / 4) * 3) ? '#006d2c' :
+                d.properties._projectCount > (Math.ceil(_maxRegion / 4) * 2) ? '#41ab5d' :
+                  d.properties._projectCount > (Math.ceil(_maxRegion / 4)) ? '#74c476' :
+                    d.properties._projectCount > 0 ? '#a1d99b' :
+                      '#fff';
 
             })
             .on("click", function (d) {
@@ -823,6 +923,11 @@
 
             })
 
+          var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+          var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxRegion / 4)), (Math.ceil(_maxRegion / 4)) + " - " + (Math.ceil(_maxRegion / 4) * 2), (Math.ceil(_maxRegion / 4) * 2) + " - " + (Math.ceil(_maxRegion / 4) * 3), (Math.ceil(_maxRegion / 4) * 3) + " - " + (Math.ceil(_maxRegion / 4) * 4)];
+
+          addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
+
           mapRegions.on("moveend", updateRegions);
 
           updateRegions();
@@ -837,7 +942,7 @@
 
     });
 
-    
+
   </script>
 
   <script>
