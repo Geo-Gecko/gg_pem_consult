@@ -420,12 +420,12 @@
         .attr('data-th', function (d) {
           return d.name;
         })
-        // .attr('class', function (d) {
-        //   if (d.value === different) {
-        //     return 'highlighted'
-        //   }
-        //   return
-        // })
+        .attr('class', function (d) {
+          if (d.value === different) {
+            return 'highlighted'
+          }
+          return
+        })
         .text(function (d) {
           // console.log(typeof(d.value))
           if (typeof (d.value) === 'string') {
@@ -831,7 +831,7 @@
               //  }, []);
 
 
-              if (filteredDataset) {
+              if (filteredCountryList) {
                 updateTable(filteredDataset, "#projectsTable", d.properties.NAME)
               } else {
                 updateTable([], "#projectsTable")
