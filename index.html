@@ -10,207 +10,29 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3/dist/leaflet.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" />
-  <link rel="stylesheet" href="css/normalize.css" />
-  <link rel="stylesheet" href="css/skeleton.css" />
-  <link rel="stylesheet" href="css/skeleton-tabs.css" />
+
+
+  <!--   <link rel="stylesheet" href="css/normalize.css" /> -->
+
+  <link rel="stylesheet" href="css/PEM.css" />
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.js"></script>
   <script src="src/skeleton-tabs.js"></script>
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.css" /> -->
-  <link rel="stylesheet" href="css/nouislider.css" />
+
   <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
   <!-- <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
   <!-- Color Scale -->
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
   <style>
-    .leaflet-container {
-      background: #fff;
-    }
-
-    body {
-      overflow-y: hidden;
-      margin: 0;
-      padding: 0;
-    }
-
-    #container {
-      width: 100%;
-      height: 100%;
-    }
-
-    #map {
-      height: 60% !important;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-    }
-
-    #mapRegions {
-      display: none;
-      height: 60% !important;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-    }
-
-    .control-panel {
-      position: absolute;
-      bottom: 0;
-      top: unset !important;
-      right: 0;
-      opacity: 0.85;
-      /* margin-right: 10px; */
-      margin-bottom: 10px;
-      z-index: 1000;
-      /*max-width: 50%; */
-      width: 100%;
-      /* max-height: 515px; */
-      height: 40% !important;
-      /* overflow-y: auto; */
-      border-top: 3px solid #aac741;
-      /* border-bottom: 3px solid #aac741; */
-      background-color: #f8f8f8;
-    }
-
-
-    .control-panel h4 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .control-panel p {
-      margin-bottom: .5rem;
-    }
-
-    .control-panel input[type=number] {
-      width: 48%;
-    }
-
-    .control-panel label {
-      font-weight: inherit;
-      margin-bottom: 1rem;
-    }
-
-    .control-panel select {
-      margin-bottom: 1rem;
-    }
-
-    /* This is changed!!! */
-    @media (max-width: 550px) {
-      .control-panel {
-        max-width: 100%;
-        width: 100%;
-        height: 200px;
-        overflow-y: auto;
-        position: absolute;
-        bottom: 0;
-        top: unset !important;
-        margin: 0 !important;
-
-      }
-
-      .tab-content {
-        overflow-y: unset !important
-      }
-
-    }
-
-    .control-panel h4 {
-      font-size: 2.4rem !important;
-    }
-
-
-    @media (max-width: 550px) {
-      .control-panel {
-        max-width: 100%;
-        width: 100%;
-      }
-    }
-
-    .sliders {
-      margin: auto;
-      width: 75%;
-    }
-
-    .containerIMG {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-    }
-
-    img {
-      flex: 1;
-      max-width: 100%;
-      height: auto;
-      max-height: 310px;
-    }
-
-    #student-count,
-    #pem-count {
-      padding-left: 10%;
-    }
-
-    .groupTitle {
-      font-size: larger;
-      text-decoration: underline;
-      color: black !important;
-      font-weight: bolder;
-    }
-
     .selected {
       background-color: #aac741;
     }
-
-    .row {
-      display: flex;
-      white-space: nowrap;
-      width: 100% !important;
-    }
-
-    .row>div {
-      justify-content: space-between;
-      margin: auto;
-      padding: auto;
-      display: inline-block;
-    }
-
-
-    .highlighted {
-      /* background-color: #aac741; */
-    }
-
-    #legend,
-    #legendRegion {
-      border-radius: 5px;
-      background-color: lightgrey;
-    }
-
-    #summary {
-      padding-left: 5%;
-    }
-
-
-    .container {
-      display: flex;
-      flex: auto;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .head {}
-
-    .content {
-      border: 1px solid #bbb;
-      overflow-y: auto;
-    }
-
-    .foot {}
   </style>
-
 </head>
 
 <body>
@@ -237,25 +59,26 @@
         <!-- FILTER TAB-->
         <div class="tab-pane active" id="Filters">
           <center>
-            <div class="row">
+            <div class="row" id="test">
               <div>
-                <button class="w3-bar-item w3-button" style="font-size: 10px; float: center !important;"
+                <button class="w3-bar-item w3-button w3-mobile" style="font-size: 10px; float: center !important;"
                   id="countries">Countries</button>
                 <br>
-                <button class="w3-bar-item w3-button" style="font-size: 10px; float: center !important;"
+                <button class="w3-bar-item w3-button w3-mobile" style="font-size: 10px; float: center !important;"
                   id="regions">Regions</button>
               </div>
+              <br>
               <div>
                 <strong>People</strong>
                 <!-- <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development" style="font-size: 5px; float: center !important;" id="clearPeople">Clear</button> -->
                 <br>
-                <button class="sector w3-bar-item w3-button" title="Governance & Civil Society"
+                <button class="sector w3-bar-item w3-button w3-mobile" title="Governance & Civil Society"
                   style="font-size: 10px; float: center !important;">GCS</button>
-                <button class="sector w3-bar-item w3-button" title="Skills & Employment"
+                <button class="sector w3-bar-item w3-button w3-mobile" title="Skills & Employment"
                   style="font-size: 10px; float: center !important;">SE</button>
-                <button class="sector w3-bar-item w3-button" title="Growth & Market Development"
+                <button class="sector w3-bar-item w3-button w3-mobile" title="Growth & Market Development"
                   style="font-size: 10px; float: center !important;">GMD</button>
-                <button class="sector w3-bar-item w3-button" title="Agricultural & Rural Development"
+                <button class="sector w3-bar-item w3-button w3-mobile" title="Agricultural & Rural Development"
                   style="font-size: 10px; float: center !important;">ARD</button></div>
               <div>
                 <strong>Environment</strong>
@@ -292,15 +115,39 @@
             <!--List of filters:  -->
             <div id='sliderContainer' style="float:unset; overflow-y: auto; max-height: 100%;">
               <div>
-                <div class="col-md-12" style="overflow-x: hidden">
+                <div class="col-md-" style="overflow-x: hidden">
                   <center>
-                    <div id="pem-filter-list" class="row custom-list" style="padding-left: 10%"></div>
+                    <div id="pem-filter-list" class="row_sliders"></div>
                   </center>
                 </div>
               </div>
             </div>
           </center>
         </div>
+
+        <script>
+          $(window).on('resize', function () {
+            if ($(window).width() > 850) {
+              $('#test').addClass('row');
+              $('#test').removeClass('row2');
+            } else {
+              $('#test').addClass('row2');
+              $('#test').removeClass('row');
+            }
+          })
+        </script>
+        <script>
+          $(window).on('resize', function () {
+            if ($(window).width() > 850) {
+              $('#pem-filter-list').addClass('row_sliders');
+              $('#pem-filter-list').removeClass('row_sliders2');
+            } else {
+              $('#pem-filter-list').addClass('row_sliders2');
+              $('#pem-filter-list').removeClass('row_sliders');
+            }
+          })
+        </script>
+
 
 
         <!-- Projects tab -->
@@ -312,7 +159,7 @@
               <strong>Filtered projects</strong>
               <div id='headers'></div>
               <!-- <table> -->
-                <!-- <tbody>
+              <!-- <tbody>
                   <tr style="width: 100% !important;" >
                     <td class="header" style="width: 25%;">Start Year</th>
                     <td class="header" style="width: 25%;">Duration</th>
@@ -325,11 +172,11 @@
               <!-- </table> -->
             </div>
             <div class="content">
-                <div id="projectsTable"></div>
-              </div>
-              <div class="foot"></div>
+              <div id="projectsTable"></div>
+            </div>
+            <div class="foot"></div>
           </div>
-          
+
         </div>
       </div>
 
@@ -340,6 +187,35 @@
 
 
   <script>
+    function readDropbox(sURL) {
+      var oRequest = new XMLHttpRequest();
+      oRequest.open("GET", sURL, false);
+      oRequest.onreadystatechange = function (oEvent) {
+        if (oRequest.readyState === 4) {
+          if (oRequest.status === 200) {
+            console.log(oRequest.responseText)
+          }
+          else {
+            console.log("Error", oRequest.statusText);
+          }
+        }
+      }
+      oRequest.setRequestHeader("User-Agent", navigator.userAgent);
+      try {
+        oRequest.send(null)
+      }
+      catch (err) {
+        alert(err);
+      }
+      if (oRequest.status == 200) {
+        return oRequest.responseText;
+      }
+      else {
+        alert("Error - File not found in Dropbox public folder");
+        return null;
+      }
+    }
+
     function eventFire(el, etype) {
       if (el.fireEvent) {
         el.fireEvent('on' + etype);
@@ -367,7 +243,7 @@
       var titles = d3.keys(data[0]);
       var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
       var headers = table.append('thead').append('tr')
-      .attr('id', 'headersT')
+        .attr('id', 'headersT')
         .selectAll('th')
         .data(titlesText).enter()
         .append('th')
@@ -376,7 +252,6 @@
           return d
         })
         .on('click', function (d) {
-          console.log(d)
           headers.attr('class', 'header');
           if (sortAscending) {
             rows.sort(function (a, b) {
@@ -391,9 +266,9 @@
           }
 
         });
-        // $('#headers').prepend($('#headersT'));
+      // $('#headers').prepend($('#headersT'));
 
-        // console.log(headers)
+      // console.log(headers)
       var rows = table.append('tbody').selectAll('tr')
         .data(data).enter()
         .append('tr');
@@ -619,6 +494,8 @@
     var mapRegion;
 
     // map.fitBounds(bounds);
+    // var csv = readDropbox('https://www.dropbox.com/sh/abtw98b1ng4cv4q/AAA3fwK2CmgO57XMXm7qGt1Na?dl=1')
+    // console.log(csv)
     Papa.parse('PEM_data/PEM Reference database June 2019.csv', {
       download: true,
       header: true,
@@ -737,7 +614,7 @@
 
           L.svg().addTo(mapRegions);
 
-          var legendRegion = L.control({ position: 'bottomright' });
+          var legendRegion = L.control({ position: 'bottomleft' });
 
           legendRegion.onAdd = function (mapRegions) {
             var div = L.DomUtil.create('div', 'info legend');
@@ -811,17 +688,42 @@
 
               $.each(filteredCountryList, function (index, value) {
                 if (d.properties.NAME === value.key) {
-                  console.log(value.values.length)
                   $('#summary').html('<span>' + d.properties.NAME + ' (' + value.values.length + ' projects)</span>');
                 }
               })
 
               // $('#summary').html('<span>' + d.properties.Name + '</span>');
+              // function __unshift(array, value) {
+              //   var key = array.indexOf(value);
+              //   if (key) unset(array[key]);
+              //   array.unshift(array, value);
+              //   return array;
+              // }
+
+              // var a = ["Apple", "Orange", "Banana", "Melon"];
+              // __unshift(a, "Melon");
+              // __unshift(a, "Orange");
+
+              // console.log(a)
 
               var sortedData = filteredDataset.sort(function (a, b) {
                 //  console.log(Date.parse(a["Start date (Month/Year)"].toString()))
                 return d3.ascending(Date.parse(a["Start Year"].toString()), Date.parse(b["Start Year"].toString()))
               })
+
+              var top = sortedData.filter(function (k) {
+                if (k.COUNTRY === d.properties.NAME) {
+                  return k;
+                }
+              })
+
+              var bottom = sortedData.filter(function (k) {
+                if (k.COUNTRY !== d.properties.NAME) {
+                  return k;
+                }
+              })
+
+              console.log(top.concat(bottom));
 
               //  let sortedArr = sortedData.reduce((acc, element) => {
               //    if (element.COUNTRY = d.properties.NAME) {
@@ -830,9 +732,8 @@
               //    return [...acc, element];
               //  }, []);
 
-
-              if (filteredCountryList) {
-                updateTable(filteredDataset, "#projectsTable", d.properties.NAME)
+              if (top.concat(bottom)) {
+                updateTable(top.concat(bottom), "#projectsTable", d.properties.NAME)
               } else {
                 updateTable([], "#projectsTable")
               }
