@@ -211,7 +211,7 @@
      display: flex;
      white-space: nowrap;
      padding: 0%;
-     width: 100% !important;
+     width: 80% !important;
 	 height: 0%;
 }
  .row_sliders>div {
@@ -234,7 +234,7 @@
 	 height: 10%;
 	 width: 90%;
 }
-style="padding-left: 10%"
+/* style="padding-left: 10%" */
 
 
  .selected {
@@ -249,8 +249,6 @@ style="padding-left: 10%"
 }
  #summary {
      padding-left: 5%;
-}
- .head {
 }
  .noUi-target, .noUi-target * {
      -webkit-touch-callout: none;

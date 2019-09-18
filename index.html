@@ -187,35 +187,6 @@
 
 
   <script>
-    function readDropbox(sURL) {
-      var oRequest = new XMLHttpRequest();
-      oRequest.open("GET", sURL, false);
-      oRequest.onreadystatechange = function (oEvent) {
-        if (oRequest.readyState === 4) {
-          if (oRequest.status === 200) {
-            console.log(oRequest.responseText)
-          }
-          else {
-            console.log("Error", oRequest.statusText);
-          }
-        }
-      }
-      oRequest.setRequestHeader("User-Agent", navigator.userAgent);
-      try {
-        oRequest.send(null)
-      }
-      catch (err) {
-        alert(err);
-      }
-      if (oRequest.status == 200) {
-        return oRequest.responseText;
-      }
-      else {
-        alert("Error - File not found in Dropbox public folder");
-        return null;
-      }
-    }
-
     function eventFire(el, etype) {
       if (el.fireEvent) {
         el.fireEvent('on' + etype);
@@ -252,6 +223,7 @@
           return d
         })
         .on('click', function (d) {
+          console.log(d)
           headers.attr('class', 'header');
           if (sortAscending) {
             rows.sort(function (a, b) {
@@ -329,9 +301,13 @@
 
 
   <script src="src/piechartAndLegend.js"></script>
+    
+  <script src="src/countries.js"></script>
+
+  <script src="src/regions.js"></script>
 
   <script>
-    var globalDataset, filteredCountryList, filteredRegionList, sliderData = [{
+    var globalDataset, filteredDataset, filteredCountryList, filteredRegionList, sliderData = [{
       key: "EUR Value of assignment",
       values: []
     }, {
@@ -350,6 +326,8 @@
 
   <script>
     function styleFeatures(sliderData) {
+
+      // console.log(sliderData)
 
       $('#summary').hide();
       var selected = d3.selectAll('.selected');
@@ -395,7 +373,6 @@
       _filtered1.filter(function (k) {
         $.each(sliderData, function (index, value) {
           if (value.key === "Start Year") {
-            // console.log(k[value.key])
             if (parseFloat(Date.parse(k[value.key].toString())) >= parseFloat(Date.parse(value.values[0].toString())) && parseFloat(Date.parse(k[value.key].toString())) <= parseFloat(Date.parse(value.values[1].toString()))) {
               _filtered.push(k)
               return k;
@@ -403,6 +380,8 @@
           }
         })
       })
+
+      filteredDataset = _filtered;
 
       var _countryList = d3.nest().key(function (d) {
         return d.COUNTRY;
@@ -489,13 +468,20 @@
     function numberWithCommas(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
+    //tooltip code
+    var infobulle = d3.select("body")
+      .append("div")
+      .style("position", "absolute")
+      .style("background", "white")
+      .style("opacity", "0")
+      .style("padding", "0 10px")
+      .style("z-index", "999")
+      .style("pointer-events", "none")
 
     var map;
     var mapRegion;
 
     // map.fitBounds(bounds);
-    // var csv = readDropbox('https://www.dropbox.com/sh/abtw98b1ng4cv4q/AAA3fwK2CmgO57XMXm7qGt1Na?dl=1')
-    // console.log(csv)
     Papa.parse('PEM_data/PEM Reference database June 2019.csv', {
       download: true,
       header: true,
@@ -550,8 +536,8 @@
 
         var domain = [+Infinity, -Infinity];
 
-        d3.json("./areas/Countries.geojson", main);
-        d3.json("./areas/Regions.geojson", mainRegion);
+        main(countriesGeoJson);
+        mainRegion(regionsGeoJson);
 
         function main(data) {
           addLmaps();
@@ -692,19 +678,6 @@
                 }
               })
 
-              // $('#summary').html('<span>' + d.properties.Name + '</span>');
-              // function __unshift(array, value) {
-              //   var key = array.indexOf(value);
-              //   if (key) unset(array[key]);
-              //   array.unshift(array, value);
-              //   return array;
-              // }
-
-              // var a = ["Apple", "Orange", "Banana", "Melon"];
-              // __unshift(a, "Melon");
-              // __unshift(a, "Orange");
-
-              // console.log(a)
 
               var sortedData = filteredDataset.sort(function (a, b) {
                 //  console.log(Date.parse(a["Start date (Month/Year)"].toString()))
@@ -723,21 +696,32 @@
                 }
               })
 
-              console.log(top.concat(bottom));
-
-              //  let sortedArr = sortedData.reduce((acc, element) => {
-              //    if (element.COUNTRY = d.properties.NAME) {
-              //      return [element, ...acc];
-              //    }
-              //    return [...acc, element];
-              //  }, []);
-
               if (top.concat(bottom)) {
                 updateTable(top.concat(bottom), "#projectsTable", d.properties.NAME)
               } else {
                 updateTable([], "#projectsTable")
               }
 
+            })
+            .on("mouseover", function (d) {
+
+              var text = ''
+              $.each(filteredCountryList, function (index, value) {
+                if (d.properties.NAME === value.key) {
+                  text = '<span>' + d.properties.NAME + ' (' + value.values.length + ' filtered projects)</span>';
+                }
+              })
+
+              infobulle.transition()
+                .style("opacity", .9)
+              // console.log(d)
+              infobulle.html(text)
+                .style("left", (d3.event.pageX - 35 + "px"))
+                .style("top", (d3.event.pageY - 30 + "px"))
+            })
+            .on("mouseout", function (d) {
+              infobulle.transition()
+                .style("opacity", 0);
             })
 
           var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
@@ -836,14 +820,9 @@
           function updateRegions() {
             featureElementRegions.attr("d", path);
           }
-
         }
-
       }
-
     });
-
-
   </script>
 
   <script>
