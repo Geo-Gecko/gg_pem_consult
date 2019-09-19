@@ -152,7 +152,7 @@
 
         <!-- Projects tab -->
         <div class="tab-pane" class="filterclass" id="Projects"
-          style="overflow-x: hidden;height: 100%;width: 90% !important;">
+          style="overflow-x: hidden;height: 100%;width: 90% !important; margin: auto;">
           <!-- numbers -->
           <div class="container">
             <div class="head">
@@ -215,6 +215,7 @@
       var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
       var headers = table.append('thead').append('tr')
         .attr('id', 'headersT')
+        .style("line-height", "normal")
         .selectAll('th')
         .data(titlesText).enter()
         .append('th')
@@ -714,7 +715,6 @@
 
               infobulle.transition()
                 .style("opacity", .9)
-              // console.log(d)
               infobulle.html(text)
                 .style("left", (d3.event.pageX - 35 + "px"))
                 .style("top", (d3.event.pageY - 30 + "px"))
