@@ -58,10 +58,6 @@ function filters(filterList) {
       min: parseFloat(Start),
       max: parseFloat(End)
     },
-    // pips: {
-    //   mode: 'range',
-    //   density: 3
-    // },
     step: 380 * 24 * 60 * 60 * 1000,
     start: [parseFloat(Start), parseFloat(End)]
   });
@@ -84,10 +80,6 @@ function filters(filterList) {
       '80%': 2000000,
       'max': max
     },
-    // pips: {
-    //   mode: 'range',
-    //   density: 3
-    // },
     tooltips: true,
     format: {
       to: function (value) {
@@ -107,10 +99,11 @@ function filters(filterList) {
   });
 
   $('#resetSliders').click(function (d) {
-    $.each(sliders, function (index, value) {
-      value.noUiSlider.reset();
-    })
-    resetMap();
+    // $.each(sliders, function (index, value) {
+    //   value.noUiSlider.reset();
+    // })
+    // resetMap();
+    window.location.reload(false); 
   })
 
   $('#filterButton').click(function (d) {

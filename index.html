@@ -26,7 +26,7 @@
   <!-- Color Scale -->
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="src/jquery-1.7.1.min.js"></script>
 
   <style>
     .selected {
@@ -115,7 +115,7 @@
             <!--List of filters:  -->
             <div id='sliderContainer' style="float:unset; overflow-y: auto; max-height: 100%;">
               <div>
-                <div class="col-md-" style="overflow-x: hidden">
+                <div class="col-md-" style="overflow-x: hidden;height: 100px;">
                   <center>
                     <div id="pem-filter-list" class="row_sliders"></div>
                   </center>
@@ -209,7 +209,7 @@
     function updateTable(data, element, different) {
 
       d3.select(element).select('table').remove();
-      var sortAscending = true;
+      var sortAscending = false;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
       var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
@@ -224,7 +224,6 @@
           return d
         })
         .on('click', function (d) {
-          console.log(d)
           headers.attr('class', 'header');
           if (sortAscending) {
             rows.sort(function (a, b) {
@@ -239,9 +238,6 @@
           }
 
         });
-      // $('#headers').prepend($('#headersT'));
-
-      // console.log(headers)
       var rows = table.append('tbody').selectAll('tr')
         .data(data).enter()
         .append('tr');
@@ -409,7 +405,7 @@
 
 
       var _sortedData = _filtered.sort(function (a, b) {
-        return d3.ascending(a.COUNTRY, b.COUNTRY)
+        return d3.ascending(b["Start Year"], a["Start Year"])
       })
 
       updateTable(_sortedData, '#projectsTable');
@@ -530,7 +526,7 @@
         })
 
         var sortedData = results.data.sort(function (a, b) {
-          return d3.ascending(a.COUNTRY, b.COUNTRY)
+          return d3.ascending(b["Start Year"], a["Start Year"])
         })
 
         updateTable(sortedData, '#projectsTable');
@@ -681,8 +677,7 @@
 
 
               var sortedData = filteredDataset.sort(function (a, b) {
-                //  console.log(Date.parse(a["Start date (Month/Year)"].toString()))
-                return d3.ascending(Date.parse(a["Start Year"].toString()), Date.parse(b["Start Year"].toString()))
+                return d3.ascending(Date.parse(b["Start Year"].toString()), Date.parse(a["Start Year"].toString()))
               })
 
               var top = sortedData.filter(function (k) {
