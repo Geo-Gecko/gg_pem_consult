@@ -59,6 +59,7 @@
         <!-- FILTER TAB-->
         <div class="tab-pane active" id="Filters">
           <center>
+            <!-- <div id="legendRegion" style="width: 300px; height: 300px;"></div> -->
             <div class="row" id="test">
               <div>
                 <button class="w3-bar-item w3-button w3-mobile" style="font-size: 10px; float: center !important;"
@@ -158,18 +159,6 @@
             <div class="head">
               <strong>Filtered projects</strong>
               <div id='headers'></div>
-              <!-- <table> -->
-              <!-- <tbody>
-                  <tr style="width: 100% !important;" >
-                    <td class="header" style="width: 25%;">Start Year</th>
-                    <td class="header" style="width: 25%;">Duration</th>
-                    <td class="header" style="width: 25%;">PROJECT TITLE</th>
-                    <td class="header" style="width: 25%;">COUNTRY</th>
-                    <td class="header" style="width: 25%;">Name of Client</th>
-                    <td class="header" style="width: 25%;">EUR Value of assignment</th>
-                  </tr>
-                </tbody> -->
-              <!-- </table> -->
             </div>
             <div class="content">
               <div id="projectsTable"></div>
@@ -212,7 +201,7 @@
       var sortAscending = false;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
-      var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
+      var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "REGION", "Name of Client", "EUR Value of assignment"]
       var headers = table.append('thead').append('tr')
         .attr('id', 'headersT')
         .style("line-height", "normal")
@@ -298,7 +287,7 @@
 
 
   <script src="src/piechartAndLegend.js"></script>
-    
+
   <script src="src/countries.js"></script>
 
   <script src="src/regions.js"></script>
@@ -479,12 +468,12 @@
     var mapRegion;
 
     // map.fitBounds(bounds);
-    
+
 
     // Uncomment to use the dropbox link
     // Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/j7to1r6i740x06o/PEM%20Reference%20database%20June%202019.csv?dl=1', {
 
-      //COmment below to remove local file link
+    //COmment below to remove local file link
     Papa.parse('PEM_data/PEM Reference database June 2019.csv', {
       download: true,
       header: true,
@@ -555,8 +544,12 @@
         function addLmaps() {
 
           map = L.map('map', {
-            zoomSnap: 0.25
+            zoomControl: false
           });
+          L.control.zoom({
+            zoomSnap: 0.25,
+            position: 'bottomleft'
+          }).addTo(map);
           if (L.Browser.mobile) {
             map.setView([29.855533, 48.147778], 1.5);
           } else {
@@ -587,8 +580,12 @@
         function addLmapsRegions() {
 
           mapRegions = L.map('mapRegions', {
-            zoomSnap: 0.25
+            zoomControl: false
           });
+          L.control.zoom({
+            zoomSnap: 0.25,
+            position: 'bottomleft'
+          }).addTo(mapRegions);
           if (L.Browser.mobile) {
             mapRegions.setView([29.855533, 48.147778], 1.5);
           } else {
@@ -603,7 +600,7 @@
 
           L.svg().addTo(mapRegions);
 
-          var legendRegion = L.control({ position: 'bottomleft' });
+          var legendRegion = L.control({ position: 'bottomright' });
 
           legendRegion.onAdd = function (mapRegions) {
             var div = L.DomUtil.create('div', 'info legend');
@@ -785,33 +782,63 @@
 
             })
             .on("click", function (d) {
-              //  console.log(filteredDataset);
               eventFire(document.getElementById('projectsButton'), 'click');
 
-              var tableData = regionList.filter(function (k) {
-                if (k.key === d.properties.REGION_UN) {
-                  return k.values;
-                }
-              }).sort(function (a, b) {
-                //  console.log(a);
-                return a.gsize - b.gsize || a.glow - b.glow;
-              });
-              //  console.log(tableData);
-              //  .sort(function(x, y) {
-              //    return d3.ascending(x.COUNTRY, y.COUNTRY);
-              //  });
+              $('#summary').show();
+              $('#summary').html('<span>' + d.properties.REGION_UN + ' (None)</span>');
 
-              if (tableData[0]) {
-                updateTable(tableData[0].values, "#projectsTable")
+              $.each(filteredRegionList, function (index, value) {
+                if (d.properties.REGION_UN === value.key) {
+                  $('#summary').html('<span>' + d.properties.REGION_UN + ' (' + value.values.length + ' projects)</span>');
+                }
+              })
+
+
+              var sortedData = filteredDataset.sort(function (a, b) {
+                return d3.ascending(Date.parse(b["Start Year"].toString()), Date.parse(a["Start Year"].toString()))
+              })
+
+              var top = sortedData.filter(function (k) {
+                if (k.REGION === d.properties.REGION_UN) {
+                  return k;
+                }
+              })
+
+              var bottom = sortedData.filter(function (k) {
+                if (k.REGION !== d.properties.REGION_UN) {
+                  return k;
+                }
+              })
+
+              if (top.concat(bottom)) {
+                updateTable(top.concat(bottom), "#projectsTable", d.properties.REGION_UN)
               } else {
                 updateTable([], "#projectsTable")
               }
 
+            }).on("mouseover", function (d) {
+
+              var text = ''
+              $.each(filteredRegionList, function (index, value) {
+                if (d.properties.REGION_UN === value.key) {
+                  text = '<span>' + d.properties.REGION_UN + ' (' + value.values.length + ' filtered projects)</span>';
+                }
+              })
+
+              infobulle.transition()
+                .style("opacity", .9)
+              infobulle.html(text)
+                .style("left", (d3.event.pageX - 35 + "px"))
+                .style("top", (d3.event.pageY - 30 + "px"))
+            })
+            .on("mouseout", function (d) {
+              infobulle.transition()
+                .style("opacity", 0);
             })
 
           var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
           var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxRegion / 4)), (Math.ceil(_maxRegion / 4)) + " - " + (Math.ceil(_maxRegion / 4) * 2), (Math.ceil(_maxRegion / 4) * 2) + " - " + (Math.ceil(_maxRegion / 4) * 3), (Math.ceil(_maxRegion / 4) * 3) + " - " + (Math.ceil(_maxRegion / 4) * 4)];
-
+          console.log(2019)
           addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
 
           mapRegions.on("moveend", updateRegions);
@@ -831,6 +858,7 @@
       $("#map").hide();
       $("#mapRegions").show();
       mapRegions.invalidateSize();
+
 
       var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
         northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
