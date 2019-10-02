@@ -569,17 +569,18 @@
             zoomSnap: 0.25,
             position: 'bottomleft'
           }).addTo(map);
+          
           if (L.Browser.mobile) {
-            map.setView([29.855533, 48.147778], 1.5);
+            map.setView([30.078601,9.614402 ], 2);
           } else {
-            map.setView([29.855533, 48.147778], 1.5);
+            map.setView([30.078601,9.614402 ], 2);
           }
 
-          var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
-            northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
-            bounds = new L.LatLngBounds(southWest, northEast);
+          // var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
+          //   northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
+          //   bounds = new L.LatLngBounds(southWest, northEast);
 
-          map.fitBounds(bounds);
+          // map.fitBounds(bounds);
 
           L.svg().addTo(map);
 
@@ -606,16 +607,16 @@
             position: 'bottomleft'
           }).addTo(mapRegions);
           if (L.Browser.mobile) {
-            mapRegions.setView([29.855533, 48.147778], 1.5);
+            mapRegions.setView([30.078601,9.614402], 2);
           } else {
-            mapRegions.setView([29.855533, 48.147778], 1.5);
+            mapRegions.setView([30.078601,9.614402], 2);
           }
 
-          var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
-            northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
-            bounds = new L.LatLngBounds(southWest, northEast);
+          // var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
+          //   northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
+          //   bounds = new L.LatLngBounds(southWest, northEast);
 
-          mapRegions.fitBounds(bounds);
+          // mapRegions.fitBounds(bounds);
 
           L.svg().addTo(mapRegions);
 
