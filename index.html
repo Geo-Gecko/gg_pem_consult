@@ -201,7 +201,7 @@
       var sortAscending = false;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
-      var titlesText = ["End year", "Duration (Months)", "Project Title", "Country", "Region", "Name of Client", "Value of assignment (EUR)"]
+      var titlesText = ["End year ", "Duration (Months)", "Project Title ", "Country", "Region", "Name of Client ", "Value of assignment (EUR)"]
       var headers = table.append('thead').append('tr')
         .attr('id', 'headersT')
         .style("line-height", "normal")
@@ -395,7 +395,7 @@
         return d3.ascending(b["End year"], a[" End year"])
       })
 
-      updateTable(_sortedData, '#projectsTable');
+      updateTable(_sortedData, '#projectsTable', "");
 
       featureElement.style("fill", function (d) {
         d.properties._projectCount = -1;
@@ -409,15 +409,15 @@
           }
         });
 
-        return d.properties._projectCount > (Math.ceil(maxCountry / 4) * 3) ? '#006d2c' :
-          d.properties._projectCount > (Math.ceil(maxCountry / 4) * 2) ? '#41ab5d' :
-            d.properties._projectCount > (Math.ceil(maxCountry / 4)) ? '#74c476' :
-              d.properties._projectCount > 0 ? '#a1d99b' :
+        return d.properties._projectCount > (Math.ceil(maxCountry / 4) * 3) ? '#1a9641' :
+          d.properties._projectCount > (Math.ceil(maxCountry / 4) * 2) ? '#a6d96a' :
+            d.properties._projectCount > (Math.ceil(maxCountry / 4)) ? '#ffffbf' :
+              d.properties._projectCount > 0 ? '#fdae61' :
                 '#fff';
 
       })
 
-      var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+      var array = ['#fff', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641'];
       var arrayLabel = ["No Projects", "0 - " + (Math.ceil(maxCountry / 4)), (Math.ceil(maxCountry / 4)) + " - " + (Math.ceil(maxCountry / 4) * 2), (Math.ceil(maxCountry / 4) * 2) + " - " + (Math.ceil(maxCountry / 4) * 3), (Math.ceil(maxCountry / 4) * 3) + " - " + (Math.ceil(maxCountry / 4) * 4)];
 
       addLegend(array, arrayLabel, "Legend", "#legend", "circle");
@@ -435,15 +435,15 @@
         });
 
 
-        return d.properties._projectCount > (Math.ceil(maxRegion / 4) * 3) ? '#006d2c' :
-          d.properties._projectCount > (Math.ceil(maxRegion / 4) * 2) ? '#41ab5d' :
-            d.properties._projectCount > (Math.ceil(maxRegion / 4)) ? '#74c476' :
-              d.properties._projectCount > 0 ? '#a1d99b' :
+        return d.properties._projectCount > (Math.ceil(maxRegion / 4) * 3) ? '#1a9641' :
+          d.properties._projectCount > (Math.ceil(maxRegion / 4) * 2) ? '#a6d96a' :
+            d.properties._projectCount > (Math.ceil(maxRegion / 4)) ? '#ffffbf' :
+              d.properties._projectCount > 0 ? '#fdae61' :
                 '#fff';
 
       })
 
-      var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+      var array = ['#fff', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641'];
       var arrayLabel = ["No Projects", "0 - " + (Math.ceil(maxRegion / 4)), (Math.ceil(maxRegion / 4)) + " - " + (Math.ceil(maxRegion / 4) * 2), (Math.ceil(maxRegion / 4) * 2) + " - " + (Math.ceil(maxRegion / 4) * 3), (Math.ceil(maxRegion / 4) * 3) + " - " + (Math.ceil(maxRegion / 4) * 4)];
 
       addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
@@ -471,15 +471,14 @@
     // Uncomment to use the dropbox link
     Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/6e598bcximtk6pz/mapdata.csv?dl=1', {
 
-    //COmment below to remove local file link
-	// Papa.parse('PEM_data/mapdata.csv', {
-    delimeter: ";",
+      //COmment below to remove local file link
+      // Papa.parse('PEM_data/mapdata.csv', {
+      delimeter: ";",
       download: true,
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: function (results) {
-        console.log(results)
 
         Papa.parse('PEM_data/sliders.csv', {
           download: true,
@@ -491,26 +490,33 @@
             filters(results);
           }
         });
+        var valid = results.data.filter(function (k) {
+          if (k.Country !== "" && k.Region !== "") {
+            return k;
+          }
+        })
 
-        globalDataset = results.data;
+        globalDataset = valid;
 
-        filteredDataset = results.data;
+        filteredDataset = valid;
+
+
 
         //D3 function to summarize table by country
         var countryList = d3.nest().key(function (d) {
           return d.Country;
-        }).sortKeys(d3.ascending).entries(results.data);
+        }).sortKeys(d3.ascending).entries(valid);
 
         filteredCountryList = countryList
 
         //D3 function to summarize table by region
         var regionList = d3.nest().key(function (d) {
           return d.Region
-        }).sortKeys(d3.ascending).entries(results.data);
+        }).sortKeys(d3.ascending).entries(valid);
 
         filteredRegionList = regionList;
 
-        d3.select("#pem-count").text(numberWithCommas(results.data.length));
+        d3.select("#pem-count").text(numberWithCommas(valid.length));
 
         var _maxCountry = d3.max(countryList, function (d) {
           return d.values.length;
@@ -520,10 +526,10 @@
           return d.values.length;
         })
 
-        var sortedData = results.data.sort(function (a, b) {
+        var sortedData = valid.sort(function (a, b) {
           return d3.ascending(b["End year "], a["End year "])
         })
-        updateTable(sortedData, '#projectsTable');
+        updateTable(sortedData, '#projectsTable', "");
 
         var domain = [+Infinity, -Infinity];
 
@@ -658,10 +664,10 @@
             .attr("stroke-width", "0.5px")
             .attr("stroke", "#848383")
             .attr("fill", function (d) {
-              return d.properties._projectCount > (Math.ceil(_maxCountry / 4) * 3) ? '#006d2c' :
-                d.properties._projectCount > (Math.ceil(_maxCountry / 4) * 2) ? '#41ab5d' :
-                  d.properties._projectCount > (Math.ceil(_maxCountry / 4)) ? '#74c476' :
-                    d.properties._projectCount > 0 ? '#a1d99b' :
+              return d.properties._projectCount > (Math.ceil(_maxCountry / 4) * 3) ? '#1a9641' :
+                d.properties._projectCount > (Math.ceil(_maxCountry / 4) * 2) ? '#a6d96a' :
+                  d.properties._projectCount > (Math.ceil(_maxCountry / 4)) ? '#ffffbf' :
+                    d.properties._projectCount > 0 ? '#fdae61' :
                       '#fff';
 
             })
@@ -721,7 +727,7 @@
                 .style("opacity", 0);
             })
 
-          var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+          var array = ['#fff', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641'];
           var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxCountry / 4)), (Math.ceil(_maxCountry / 4)) + " - " + (Math.ceil(_maxCountry / 4) * 2), (Math.ceil(_maxCountry / 4) * 2) + " - " + (Math.ceil(_maxCountry / 4) * 3), (Math.ceil(_maxCountry / 4) * 3) + " - " + (Math.ceil(_maxCountry / 4) * 4)];
 
           addLegend(array, arrayLabel, "Legend", "#legend", "circle");
@@ -773,10 +779,10 @@
             .attr("stroke", "#848383")
             .attr("fill", function (d) {
 
-              return d.properties._projectCount > (Math.ceil(_maxRegion / 4) * 3) ? '#006d2c' :
-                d.properties._projectCount > (Math.ceil(_maxRegion / 4) * 2) ? '#41ab5d' :
-                  d.properties._projectCount > (Math.ceil(_maxRegion / 4)) ? '#74c476' :
-                    d.properties._projectCount > 0 ? '#a1d99b' :
+              return d.properties._projectCount > (Math.ceil(_maxRegion / 4) * 3) ? '#1a9641' :
+                d.properties._projectCount > (Math.ceil(_maxRegion / 4) * 2) ? '#a6d96a' :
+                  d.properties._projectCount > (Math.ceil(_maxRegion / 4)) ? '#ffffbf' :
+                    d.properties._projectCount > 0 ? '#fdae61' :
                       '#fff';
 
             })
@@ -812,7 +818,7 @@
               if (top.concat(bottom)) {
                 updateTable(top.concat(bottom), "#projectsTable", d.properties.REGION_UN)
               } else {
-                updateTable([], "#projectsTable")
+                updateTable([], "#projectsTable", "")
               }
 
             }).on("mouseover", function (d) {
@@ -835,7 +841,7 @@
                 .style("opacity", 0);
             })
 
-          var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
+          var array = ['#fff', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641'];
           var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxRegion / 4)), (Math.ceil(_maxRegion / 4)) + " - " + (Math.ceil(_maxRegion / 4) * 2), (Math.ceil(_maxRegion / 4) * 2) + " - " + (Math.ceil(_maxRegion / 4) * 3), (Math.ceil(_maxRegion / 4) * 3) + " - " + (Math.ceil(_maxRegion / 4) * 4)];
           addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
 

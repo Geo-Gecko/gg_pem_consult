@@ -76,8 +76,8 @@ function filters(filterList) {
     step: (max - min) / 10000,
     range: {
       'min': min,
-      '70%': 400000,
-      '80%': 2000000,
+      '60%': 250000,
+      '80%': 600000,
       'max': max
     },
     tooltips: true,
