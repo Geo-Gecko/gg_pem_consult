@@ -4,7 +4,7 @@ function addLegend(array, arrayLabel, legendLabel, legendWhere, circle) {
 				.append('svg')
 				.attr('class', 'head')
 				.attr('width', "100%")
-				.attr('height', 100);
+				.attr('height', 150);
 
 
 				var legendX = 0;
