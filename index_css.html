@@ -300,7 +300,7 @@
       var sortAscending = true;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
-      var titlesText = ["Start date (Month/Year)", "Compl. Date (Month/ Year)", "PROJECT TITLE", "COUNTRY", "Name of Client", "EUR Value of assignment"]
+      var titlesText = ["Start date (Month/Year)", "Compl. Date (Month/ Year)", "Project Title", "Country", "Name of Client", "Value of assignment (EUR)"]
       var headers = table.append('thead').append('tr')
         .selectAll('th')
         .data(titlesText).enter()
@@ -442,13 +442,13 @@
 
         //D3 function to summarize table by country
         var countryList = d3.nest().key(function(d) {
-          return d.COUNTRY;
+          return d.Country;
         }).sortKeys(d3.ascending).entries(results.data);
 
         d3.select("#pem-count").text(numberWithCommas(results.data.length));
 
         var sortedData = results.data.sort(function(a, b) {
-          return d3.ascending(a.COUNTRY, b.COUNTRY)
+          return d3.ascending(a.Country, b.Country)
         })
 
         updateTable(sortedData, '#projectsTable');
@@ -510,7 +510,7 @@
                 if (c.key === d.properties.NAME) {
                   d.properties._projectCount = c.values.length;
                   d.properties._projectValue = d3.sum(c.values, function(d) {
-                    return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
+                    return parseFloat(d["Value of assignment (EUR)"].toString().replace(/,/g, ''))
                   })
                   var filterValue = +(d.properties._projectCount);
                   domain[0] = filterValue < domain[0] ? filterValue :
@@ -552,7 +552,7 @@
                   return k.values;
                 }
               }).sort(function(x, y) {
-                return d3.ascending(x.COUNTRY, y.COUNTRY);
+                return d3.ascending(x.Country, y.Country);
               });
 
               if (tableData[0]) {

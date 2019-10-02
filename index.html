@@ -201,7 +201,7 @@
       var sortAscending = false;
       var table = d3.select(element).append('table');
       var titles = d3.keys(data[0]);
-      var titlesText = ["Start Year", "Duration", "PROJECT TITLE", "COUNTRY", "REGION", "Name of Client", "EUR Value of assignment"]
+      var titlesText = ["End year", "Duration (Months)", "Project Title", "Country", "Region", "Name of Client", "Value of assignment (EUR)"]
       var headers = table.append('thead').append('tr')
         .attr('id', 'headersT')
         .style("line-height", "normal")
@@ -294,10 +294,10 @@
 
   <script>
     var globalDataset, filteredDataset, filteredCountryList, filteredRegionList, sliderData = [{
-      key: "EUR Value of assignment",
+      key: "Value of assignment (EUR)",
       values: []
     }, {
-      key: "Start Year",
+      key: "End year ",
       values: []
     }
     ];
@@ -312,8 +312,6 @@
 
   <script>
     function styleFeatures(sliderData) {
-
-      // console.log(sliderData)
 
       $('#summary').hide();
       var selected = d3.selectAll('.selected');
@@ -347,7 +345,7 @@
 
       _filteredDataset.filter(function (k) {
         $.each(sliderData, function (index, value) {
-          if (value.key !== "Start Year") {
+          if (value.key !== "End year ") {
             if (parseFloat(k[value.key].toString().replace(/,/g, '')) >= parseFloat(value.values[0]) && parseFloat(k[value.key].toString().replace(/,/g, '')) <= parseFloat(value.values[1])) {
               _filtered1.push(k);
               return k;
@@ -358,8 +356,8 @@
 
       _filtered1.filter(function (k) {
         $.each(sliderData, function (index, value) {
-          if (value.key === "Start Year") {
-            if (parseFloat(Date.parse(k[value.key].toString())) >= parseFloat(Date.parse(value.values[0].toString())) && parseFloat(Date.parse(k[value.key].toString())) <= parseFloat(Date.parse(value.values[1].toString()))) {
+          if (value.key === "End year ") {
+            if (parseFloat(Date.parse(k[value.key])) >= parseFloat(Date.parse(value.values[0])) && parseFloat(Date.parse(k[value.key])) <= parseFloat(Date.parse(value.values[1]))) {
               _filtered.push(k)
               return k;
             }
@@ -370,13 +368,13 @@
       filteredDataset = _filtered;
 
       var _countryList = d3.nest().key(function (d) {
-        return d.COUNTRY;
+        return d.Country;
       }).sortKeys(d3.ascending).entries(_filtered);
 
       filteredCountryList = _countryList;
 
       var _regionList = d3.nest().key(function (d) {
-        return d.REGION;
+        return d.Region;
       }).sortKeys(d3.ascending).entries(_filtered);
 
       filteredRegionList = _regionList;
@@ -394,7 +392,7 @@
 
 
       var _sortedData = _filtered.sort(function (a, b) {
-        return d3.ascending(b["Start Year"], a["Start Year"])
+        return d3.ascending(b["End year"], a[" End year"])
       })
 
       updateTable(_sortedData, '#projectsTable');
@@ -406,7 +404,7 @@
           if (c.key === d.properties.NAME) {
             d.properties._projectCount = c.values.length;
             d.properties._projectValue = d3.sum(c.values, function (d) {
-              return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
+              return parseFloat(d["Value of assignment (EUR)"])
             })
           }
         });
@@ -431,7 +429,7 @@
           if (c.key === d.properties.REGION_UN) {
             d.properties._projectCount = c.values.length;
             d.properties._projectValue = d3.sum(c.values, function (d) {
-              return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
+              return parseFloat(d["Value of assignment (EUR)"])
             })
           }
         });
@@ -471,15 +469,17 @@
 
 
     // Uncomment to use the dropbox link
-    // Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/j7to1r6i740x06o/PEM%20Reference%20database%20June%202019.csv?dl=1', {
+    Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/6e598bcximtk6pz/mapdata.csv?dl=1', {
 
     //COmment below to remove local file link
-    Papa.parse('PEM_data/PEM Reference database June 2019.csv', {
+	// Papa.parse('PEM_data/mapdata.csv', {
+    delimeter: ";",
       download: true,
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: function (results) {
+        console.log(results)
 
         Papa.parse('PEM_data/sliders.csv', {
           download: true,
@@ -498,14 +498,14 @@
 
         //D3 function to summarize table by country
         var countryList = d3.nest().key(function (d) {
-          return d.COUNTRY;
+          return d.Country;
         }).sortKeys(d3.ascending).entries(results.data);
 
         filteredCountryList = countryList
 
         //D3 function to summarize table by region
         var regionList = d3.nest().key(function (d) {
-          return d.REGION
+          return d.Region
         }).sortKeys(d3.ascending).entries(results.data);
 
         filteredRegionList = regionList;
@@ -521,9 +521,8 @@
         })
 
         var sortedData = results.data.sort(function (a, b) {
-          return d3.ascending(b["Start Year"], a["Start Year"])
+          return d3.ascending(b["End year "], a["End year "])
         })
-
         updateTable(sortedData, '#projectsTable');
 
         var domain = [+Infinity, -Infinity];
@@ -644,7 +643,7 @@
                 if (c.key === d.properties.NAME) {
                   d.properties._projectCount = c.values.length;
                   d.properties._projectValue = d3.sum(c.values, function (d) {
-                    return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
+                    return parseFloat(d["Value of assignment (EUR)"])
                   })
                   var filterValue = +(d.properties._projectCount);
                   domain[0] = filterValue < domain[0] ? filterValue :
@@ -680,17 +679,17 @@
 
 
               var sortedData = filteredDataset.sort(function (a, b) {
-                return d3.ascending(Date.parse(b["Start Year"].toString()), Date.parse(a["Start Year"].toString()))
+                return d3.ascending(Date.parse(b["End year "].toString()), Date.parse(a["End year "].toString()))
               })
 
               var top = sortedData.filter(function (k) {
-                if (k.COUNTRY === d.properties.NAME) {
+                if (k.Country === d.properties.NAME) {
                   return k;
                 }
               })
 
               var bottom = sortedData.filter(function (k) {
-                if (k.COUNTRY !== d.properties.NAME) {
+                if (k.Country !== d.properties.NAME) {
                   return k;
                 }
               })
@@ -758,7 +757,7 @@
                 if (c.key === d.properties.REGION_UN) {
                   d.properties._projectCount = c.values.length;
                   d.properties._projectValue = d3.sum(c.values, function (d) {
-                    return parseFloat(d["EUR Value of assignment"].toString().replace(/,/g, ''))
+                    return parseFloat(d["Value of assignment (EUR)"])
                   })
                   var filterValue = +(d.properties._projectCount);
                   domain[0] = filterValue < domain[0] ? filterValue :
@@ -795,17 +794,17 @@
 
 
               var sortedData = filteredDataset.sort(function (a, b) {
-                return d3.ascending(Date.parse(b["Start Year"].toString()), Date.parse(a["Start Year"].toString()))
+                return d3.ascending(Date.parse(b["End year "].toString()), Date.parse(a["End year "].toString()))
               })
 
               var top = sortedData.filter(function (k) {
-                if (k.REGION === d.properties.REGION_UN) {
+                if (k.Region === d.properties.REGION_UN) {
                   return k;
                 }
               })
 
               var bottom = sortedData.filter(function (k) {
-                if (k.REGION !== d.properties.REGION_UN) {
+                if (k.Region !== d.properties.REGION_UN) {
                   return k;
                 }
               })
@@ -838,7 +837,6 @@
 
           var array = ['#fff', '#a1d99b', '#74c476', '#41ab5d', '#006d2c'];
           var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxRegion / 4)), (Math.ceil(_maxRegion / 4)) + " - " + (Math.ceil(_maxRegion / 4) * 2), (Math.ceil(_maxRegion / 4) * 2) + " - " + (Math.ceil(_maxRegion / 4) * 3), (Math.ceil(_maxRegion / 4) * 3) + " - " + (Math.ceil(_maxRegion / 4) * 4)];
-          console.log(2019)
           addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
 
           mapRegions.on("moveend", updateRegions);

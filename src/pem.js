@@ -17,20 +17,20 @@ function filters(filterList) {
   var sliders = document.getElementsByClassName('sliders');
 
   var max = d3.max(filteredDataset, function (d) {
-    var value = d["EUR Value of assignment"].toString().replace(/,/g, '');
+    var value = d["Value of assignment (EUR)"].toString().replace(/,/g, '');
     return parseFloat(value);
   });
   var min = d3.min(filteredDataset, function (d) {
-    var value = d["EUR Value of assignment"].toString().replace(/,/g, '');
+    var value = d["Value of assignment (EUR)"].toString().replace(/,/g, '');
     return parseFloat(value);
   });
 
   var Start = d3.min(filteredDataset, function (d) {
-    return Date.parse(d["Start Year"].toString())
+    return Date.parse(d["End year "])
   });
 
   var End = d3.max(filteredDataset, function (d) {
-    return Date.parse(d["Start Year"].toString())
+    return Date.parse(d["End year "])
   });
 
 
@@ -94,7 +94,8 @@ function filters(filterList) {
   sliderData[0].values = [min, max];
 
   sliders[1].noUiSlider.on('slide', function (values, handle) {
-    sliderData[0].values = [values[0].replace(/,/g, '').substr(1), values[1].replace(/,/g, '').substr(1)];
+    // console.log(values)
+    sliderData[0].values = [parseFloat(values[0].substr(1).toString().replace(/,/g, '')), parseFloat(values[1].substr(1).toString().replace(/,/g, ''))];
     styleFeatures(sliderData);
   });
 
