@@ -893,22 +893,24 @@
       mapRegions.invalidateSize();
 
 
-      var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
-        northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
-        bounds = new L.LatLngBounds(southWest, northEast);
+      // var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
+      //   northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
+      //   bounds = new L.LatLngBounds(southWest, northEast);
 
-      mapRegions.fitBounds(bounds);
+      // mapRegions.fitBounds(bounds);
+      mapRegions.setView([30.078601,9.614402], 2);
     })
     $("#countries").on('click', function () {
       $("#map").show();
       $("#mapRegions").hide();
       map.invalidateSize();
 
-      var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
-        northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
-        bounds = new L.LatLngBounds(southWest, northEast);
+      // var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
+      //   northEast = new L.LatLng(84.35856680726017, 431.65195637659485),
+      //   bounds = new L.LatLngBounds(southWest, northEast);
 
-      map.fitBounds(bounds);
+      // map.fitBounds(bounds);
+      map.setView([30.078601,9.614402], 2);
     })
   </script>
 
