@@ -481,7 +481,7 @@
 
 
     // Uncomment to use the dropbox link
-    Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/7ahmxivow2xxm34/mapdata.csv?dl=1', {
+    Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/itqw3617x7bi4z4/mapdata.csv?dl=1', {
 
       //COmment below to remove local file link
       // Papa.parse('PEM_data/mapdata.csv', {
@@ -518,8 +518,6 @@
         var countryList = d3.nest().key(function (d) {
           return d.Country;
         }).sortKeys(d3.ascending).entries(valid);
-
-        console.log(countryList)
 
         filteredCountryList = countryList
 
