@@ -127,6 +127,29 @@
         </div>
 
         <script>
+          $(window).on('load', function () {
+            if ($(window).width() > 850) {
+              $('#test').addClass('row');
+              $('#test').removeClass('row2');
+            } else {
+              $('#test').addClass('row2');
+              $('#test').removeClass('row');
+            }
+          })
+        </script>
+        <script>
+          $(window).on('load', function () {
+            if ($(window).width() > 850) {
+              $('#pem-filter-list').addClass('row_sliders');
+              $('#pem-filter-list').removeClass('row_sliders2');
+            } else {
+              $('#pem-filter-list').addClass('row_sliders2');
+              $('#pem-filter-list').removeClass('row_sliders');
+            }
+          })
+        </script>
+
+        <script>
           $(window).on('resize', function () {
             if ($(window).width() > 850) {
               $('#test').addClass('row');
@@ -148,8 +171,6 @@
             }
           })
         </script>
-
-
 
         <!-- Projects tab -->
         <div class="tab-pane" class="filterclass" id="Projects"
@@ -416,10 +437,10 @@
         //         '#fff';
 
         return d.properties._projectCount > 20 ? '#1a9641' :
-                d.properties._projectCount > 10 ? '#a6d96a' :
-                  d.properties._projectCount > 5 ? '#ffffbf' :
-                    d.properties._projectCount > 0 ? '#fdae61' :
-                      '#fff';
+          d.properties._projectCount > 10 ? '#a6d96a' :
+            d.properties._projectCount > 5 ? '#ffffbf' :
+              d.properties._projectCount > 0 ? '#fdae61' :
+                '#fff';
 
       })
 
@@ -448,10 +469,10 @@
         //         '#fff';
 
         return d.properties._projectCount > 20 ? '#1a9641' :
-                d.properties._projectCount > 10 ? '#a6d96a' :
-                  d.properties._projectCount > 5 ? '#ffffbf' :
-                    d.properties._projectCount > 0 ? '#fdae61' :
-                      '#fff';
+          d.properties._projectCount > 10 ? '#a6d96a' :
+            d.properties._projectCount > 5 ? '#ffffbf' :
+              d.properties._projectCount > 0 ? '#fdae61' :
+                '#fff';
 
       })
 
@@ -481,7 +502,7 @@
 
 
     // Uncomment to use the dropbox link
-    Papa.parse('https://cors-anywhere.herokuapp.com/https://www.dropbox.com/s/itqw3617x7bi4z4/mapdata.csv?dl=1', {
+    Papa.parse('https://cors-anywhere.herokuapp.com/https://www.pem.dk/images/map_data/mapdata.csv', {
 
       //COmment below to remove local file link
       // Papa.parse('PEM_data/mapdata.csv', {
@@ -567,11 +588,11 @@
             zoomSnap: 0.25,
             position: 'bottomleft'
           }).addTo(map);
-          
+
           if (L.Browser.mobile) {
-            map.setView([30.078601,9.614402 ], 2);
+            map.setView([30.078601, 9.614402], 2);
           } else {
-            map.setView([30.078601,9.614402 ], 2);
+            map.setView([30.078601, 9.614402], 2);
           }
 
           // var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
@@ -605,9 +626,9 @@
             position: 'bottomleft'
           }).addTo(mapRegions);
           if (L.Browser.mobile) {
-            mapRegions.setView([30.078601,9.614402], 2);
+            mapRegions.setView([30.078601, 9.614402], 2);
           } else {
-            mapRegions.setView([30.078601,9.614402], 2);
+            mapRegions.setView([30.078601, 9.614402], 2);
           }
 
           // var southWest = new L.LatLng(-62.406149313445724, -371.06284625024193),
@@ -748,7 +769,7 @@
 
           var array = ['#fff', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641'];
           // var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxCountry / 4)), (Math.ceil(_maxCountry / 4)) + " - " + (Math.ceil(_maxCountry / 4) * 2), (Math.ceil(_maxCountry / 4) * 2) + " - " + (Math.ceil(_maxCountry / 4) * 3), (Math.ceil(_maxCountry / 4) * 3) + " - " + (Math.ceil(_maxCountry / 4) * 4)];
-            
+
           var arrayLabel = ["No Projects", "0 - 5", "5 - 10", "10 - 20", "20+"];
           addLegend(array, arrayLabel, "Legend", "#legend", "circle");
 
@@ -868,7 +889,7 @@
 
           var array = ['#fff', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641'];
           // var arrayLabel = ["No Projects", "0 - " + (Math.ceil(_maxRegion / 4)), (Math.ceil(_maxRegion / 4)) + " - " + (Math.ceil(_maxRegion / 4) * 2), (Math.ceil(_maxRegion / 4) * 2) + " - " + (Math.ceil(_maxRegion / 4) * 3), (Math.ceil(_maxRegion / 4) * 3) + " - " + (Math.ceil(_maxRegion / 4) * 4)];
-          
+
           var arrayLabel = ["No Projects", "0 - 5", "5 - 10", "10 - 20", "20+"];
           addLegend(array, arrayLabel, "Legend", "#legendRegion", "circle");
 
@@ -896,7 +917,7 @@
       //   bounds = new L.LatLngBounds(southWest, northEast);
 
       // mapRegions.fitBounds(bounds);
-      mapRegions.setView([30.078601,9.614402], 2);
+      mapRegions.setView([30.078601, 9.614402], 2);
     })
     $("#countries").on('click', function () {
       $("#map").show();
@@ -908,7 +929,7 @@
       //   bounds = new L.LatLngBounds(southWest, northEast);
 
       // map.fitBounds(bounds);
-      map.setView([30.078601,9.614402], 2);
+      map.setView([30.078601, 9.614402], 2);
     })
   </script>
 
